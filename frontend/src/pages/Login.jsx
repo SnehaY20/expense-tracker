@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { ChevronLeft } from "lucide-react";
-import { loginUser } from "../API/auth";
+import { loginUser } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 import AuthForm from "../components/AuthForm";
 
