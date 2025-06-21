@@ -2,6 +2,7 @@ const User = require("../models/user.js");
 const asyncHandler = require("../middleware/asyncHandler.js");
 const ErrorResponse = require("../utils/errorResponse.js");
 const logger = require("../config/logger.js");
+const defaultCategory = require("../utils/defaultCategory.js");
 
 /**
  * @desc      Register user
@@ -10,6 +11,8 @@ const logger = require("../config/logger.js");
  */
 exports.register = asyncHandler(async (req, res, next) => {
   const { name, email, password, role } = req.body;
+  await defaultCategory(user._id);
+
 
   if (!name || !email || !password) {
     return next(new ErrorResponse("Please provide all required fields", 400));
