@@ -2,7 +2,7 @@ const User = require("../models/user.js");
 const asyncHandler = require("../middleware/asyncHandler.js");
 const ErrorResponse = require("../utils/errorResponse.js");
 const logger = require("../config/logger.js");
-const defaultCategory = require("../utils/defaultCategory.js");
+const Category = require("../models/category.js");
 
 /**
  * @desc      Register user
@@ -11,8 +11,6 @@ const defaultCategory = require("../utils/defaultCategory.js");
  */
 exports.register = asyncHandler(async (req, res, next) => {
   const { name, email, password, role } = req.body;
-  await defaultCategory(user._id);
-
 
   if (!name || !email || !password) {
     return next(new ErrorResponse("Please provide all required fields", 400));
@@ -28,6 +26,11 @@ exports.register = asyncHandler(async (req, res, next) => {
     email,
     password,
     role,
+  });
+
+  Category.create({
+    name: "Others",
+    user: user._id,
   });
 
   const token = user.getSignedJwtToken();
@@ -50,7 +53,7 @@ exports.login = asyncHandler(async (req, res, next) => {
 
   // Validate email & password
   if (!email || !password) {
-    logger.error(`${TAG} Invalid email or password`)
+    logger.error(`${TAG} Invalid email or password`);
     return next(new ErrorResponse("Please provide an email and password", 400));
   }
 

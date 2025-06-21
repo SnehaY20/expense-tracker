@@ -9,20 +9,12 @@ const logger = require("../config/logger.js");
  * @access    Private
  */
 exports.getCategories = asyncHandler(async (req, res, next) => {
-  const userCategory = await Category.findOne({ user: req.user.id });
-
-  if (!userCategory) {
-    return res.status(200).json({
-      success: true,
-      count: 0,
-      data: [],
-    });
-  }
+  const userCategory = await Category.find({ user: req.user.id });
 
   res.status(200).json({
     success: true,
-    count: userCategory.category.length,
-    data: userCategory.category,
+    count: userCategory.length,
+    data: userCategory,
   });
 });
 
@@ -32,44 +24,63 @@ exports.getCategories = asyncHandler(async (req, res, next) => {
  * @access    Private
  */
 exports.createCategory = asyncHandler(async (req, res, next) => {
-  const { category } = req.body;
+  const { name } = req.body;
 
-  if (!category || category.trim() === "") {
-    return next(new ErrorResponse("Category name is required", 400));
-  }
+  const category = await Category.findOne({ user: req.user._id, name: name });
 
-  const trimmedCategory = category.trim();
-
-  let userCategory = await Category.findOne({ user: req.user.id });
-
-
-  if (!userCategory) {
-    userCategory = await Category.create({
-      user: req.user.id,
-      category: ["Others", trimmedCategory],
-    });
-
-    return res.status(201).json({
-      success: true,
-      message: "Category created successfully",
-      data: userCategory.category,
-    });
-  }
-
-  const categoryExists = userCategory.category.some(
-    (c) => c.toLowerCase() === trimmedCategory.toLowerCase()
-  );
-
-  if (categoryExists) {
+  if (category) {
     return next(new ErrorResponse("Category already exists", 400));
   }
 
-  userCategory.category.push(trimmedCategory);
-  await userCategory.save();
+  const newCategory = await Category.create({
+    name: name,
+    user: req.user._id,
+  });
 
   res.status(201).json({
     success: true,
-    message: "Category added successfully",
-    data: userCategory.category,
+    message: "Category created successfully",
+    data: newCategory,
+  });
+});
+/**
+ * @desc      Update category by ID
+ * @route     PUT /api/v1/category/:id
+ * @access    Private
+ */
+exports.updateCategory = asyncHandler(async (req, res, next) => {
+  const { name } = req.body;
+  const categoryId = req.params.id;
+
+  let category = await Category.findById(categoryId);
+
+  if (!category) {
+    return next(new ErrorResponse("Category does not exist", 404));
+  }
+
+  let existingCategory = await Category.findOne({
+    name: name,
+    user: req.user._id,
+  });
+
+  if (existingCategory) {
+    return next(
+      new ErrorResponse("Another category with the same name exists", 400)
+    );
+  }
+
+  const updatedCategory = await Category.findByIdAndUpdate(
+    categoryId,
+    {
+      name: name,
+      user: req.user._id,
+    },
+    { new: true }
+  );
+
+  res.status(200).json({
+    success: true,
+    message: "Category updated successfully",
+    data: updatedCategory,
   });
 });
