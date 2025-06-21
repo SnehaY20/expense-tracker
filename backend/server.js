@@ -4,6 +4,7 @@ const connectDb = require("./config/db.js");
 const logger = require("./config/logger.js");
 const reqLogger = require("./middleware/reqLogger.js");
 const routes = require("./routes/auth.js");
+const categories = require("./routes/category.js");
 const errorHandler = require('./middleware/errorHandler.js')
 const cors = require("cors");
 
@@ -18,12 +19,13 @@ app.use(reqLogger);
 
 app.use(
   cors({
-    origin: "http://localhost:3000", 
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
     credentials: true, 
   })
 );
 
 app.use("/api/v1", routes);
+app.use("/api/v1", categories);
 
 
 const PORT = process.env.PORT || 5000;
@@ -39,6 +41,6 @@ app.use(errorHandler);
 
 app.listen(PORT, () => {
   logger.info(
-    `Server is running in ${process.env.NODE_ENV} mode on port ${process.env.PORT}`
-  );
+    `Server is running in ${process.env.NODE_ENV} mode on port ${PORT}`
+  );  
 });
