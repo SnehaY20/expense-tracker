@@ -1,7 +1,8 @@
 const jwt = require("jsonwebtoken");
 const ErrorResponse = require("../utils/errorResponse");
+const User = require("../models/user"); 
 
-const auth = (req, res, next) => {
+const auth = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
 
   if (!token) {
@@ -10,7 +11,14 @@ const auth = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+
+    const user = await User.findById(decoded.id).select("-password"); 
+
+    if (!user) {
+      return next(new ErrorResponse("User not found", 404));
+    }
+
+    req.user = user; 
     next();
   } catch (error) {
     return next(new ErrorResponse("Token is not valid", 401));
