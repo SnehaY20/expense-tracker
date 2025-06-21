@@ -7,7 +7,7 @@ const categorySchema = new mongoose.Schema({
     required: true,
     // unique: true,
   },
-  category: {
+  categories: {
     type: [String],
     default: ["Others"], 
   },

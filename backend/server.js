@@ -6,6 +6,7 @@ const reqLogger = require("./middleware/reqLogger.js");
 const routes = require("./routes/auth.js");
 const categories = require("./routes/category.js");
 const errorHandler = require('./middleware/errorHandler.js')
+const cors = require("cors");
 
 dotenv.config({ path: "./.env" });
 
@@ -16,6 +17,12 @@ const app = express();
 app.use(express.json());
 app.use(reqLogger);
 
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    credentials: true, 
+  })
+);
 
 app.use("/api/v1", routes);
 app.use("/api/v1", categories);
