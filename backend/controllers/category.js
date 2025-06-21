@@ -91,8 +91,7 @@ exports.updateCategory = asyncHandler(async (req, res, next) => {
  * @access    Private
  */
 exports.deleteCategory = asyncHandler(async (req, res, next) => {
-  const  categoryId  = req.params.id;
-  console.log(req.params, "dhfj")
+  const categoryId = req.params.id;
 
   let category = await Category.findById(categoryId);
 
