@@ -84,3 +84,26 @@ exports.updateCategory = asyncHandler(async (req, res, next) => {
     data: updatedCategory,
   });
 });
+
+/**
+ * @desc      Delete category by ID
+ * @route     DELETE /api/v1/category/:id
+ * @access    Private
+ */
+exports.deleteCategory = asyncHandler(async (req, res, next) => {
+  const  categoryId  = req.params.id;
+  console.log(req.params, "dhfj")
+
+  let category = await Category.findById(categoryId);
+
+  if (!category) {
+    return next(new ErrorResponse("Category does not exist", 404));
+  }
+
+  await Category.findByIdAndDelete(categoryId);
+
+  res.status(200).json({
+    success: true,
+    message: "Category deleted successfully",
+  });
+});

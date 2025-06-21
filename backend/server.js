@@ -3,8 +3,8 @@ const dotenv = require("dotenv");
 const connectDb = require("./config/db.js");
 const logger = require("./config/logger.js");
 const reqLogger = require("./middleware/reqLogger.js");
-const routes = require("./routes/auth.js");
-const categories = require("./routes/category.js");
+const authRouter = require("./routes/auth.js");
+const categoriesRouter = require("./routes/category.js");
 const errorHandler = require('./middleware/errorHandler.js')
 
 dotenv.config({ path: "./.env" });
@@ -17,17 +17,16 @@ app.use(express.json());
 app.use(reqLogger);
 
 
-app.use("/api/v1", routes);
-app.use("/api/v1", categories);
+app.use("/api/v1", authRouter);
+app.use("/api/v1", categoriesRouter);
 
 
 const PORT = process.env.PORT || 5000;
 
 
 
-app.get("/", (req, res) => {
-  logger.info("route hit");
-  res.status(200).send("Hello Sneha here");
+app.get("/api/v1", (req, res) => {
+  res.status(200).send("API is live & running");
 });
 
 app.use(errorHandler);
