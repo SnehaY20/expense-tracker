@@ -9,6 +9,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
 import OnboardingSteps from "./components/OnboardingSteps.jsx";
+import Home from "./pages/Home.jsx";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <Router>
         <Routes>
+          <Route path="/" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/onboarding" element={<OnboardingPage />} />
