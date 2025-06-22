@@ -8,10 +8,8 @@ const AppInterface = ({ isVisible }) => (
     }`}
   >
     <div className="relative">
-      {/* Subtle decorative elements */}
       <div className="absolute -top-4 -left-4 w-8 h-8 border border-purple-400/30 transform rotate-45"></div>
       <div className="absolute -bottom-4 -right-4 w-6 h-6 border border-pink-400/30 transform rotate-45"></div>
-      {/* Main Interface */}
       <div className="bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-2xl transform hover:scale-105 transition-all duration-500">
         <div className="space-y-6">
           {/* Header */}

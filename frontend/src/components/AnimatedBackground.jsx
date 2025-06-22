@@ -3,7 +3,7 @@ import React from "react";
 const AnimatedBackground = () => {
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none">
-      {/* Diamond/Rhombus shaped paths */}
+      {/* Diamond*/}
       <div className="absolute top-20 right-20 w-96 h-96">
         <div
           className="w-full h-full border border-white/5 transform rotate-45 animate-spin"
@@ -40,7 +40,7 @@ const AnimatedBackground = () => {
         ></div>
       </div>
 
-      {/* Floating diamond/rhombus shapes */}
+      {/* shapes */}
       <div
         className="absolute top-1/4 left-1/4 w-4 h-4 bg-gradient-to-r from-purple-400/20 to-pink-400/20 transform rotate-45 animate-bounce"
         style={{ animationDuration: "3s", animationDelay: "0s" }}
@@ -58,7 +58,7 @@ const AnimatedBackground = () => {
         style={{ animationDuration: "3s", animationDelay: "0.5s" }}
       ></div>
 
-      {/* Large diamond outlines */}
+      {/*diamond outline */}
       <div
         className="absolute top-1/3 left-1/2 w-32 h-32 border border-purple-400/10 transform rotate-45 animate-pulse"
         style={{ animationDuration: "4s" }}
@@ -68,7 +68,7 @@ const AnimatedBackground = () => {
         style={{ animationDuration: "5s", animationDelay: "1s" }}
       ></div>
 
-      {/* Subtle gradient overlays */}
+      {/* Subtle gradient */}
       <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-gradient-to-bl from-purple-500/5 to-transparent"></div>
       <div className="absolute bottom-0 left-0 w-1/2 h-1/2 bg-gradient-to-tr from-blue-500/5 to-transparent"></div>
     </div>
