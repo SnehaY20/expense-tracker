@@ -17,8 +17,8 @@ app.use(express.json());
 app.use(reqLogger);
 
 
-app.use("/api/v1", authRouter);
-app.use("/api/v1", categoriesRouter);
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/category", categoriesRouter);
 
 
 const PORT = process.env.PORT || 5000;

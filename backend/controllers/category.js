@@ -43,6 +43,26 @@ exports.createCategory = asyncHandler(async (req, res, next) => {
     data: newCategory,
   });
 });
+
+/**
+ * @desc      Get category by ID
+ * @route     GET /api/v1/category/:id
+ * @access    Private
+ */
+exports.getCategory = asyncHandler(async (req, res, next) => {
+  const categoryId = req.params.id;
+  let category = await Category.findById(categoryId);
+
+  if (!category) {
+    return next(new ErrorResponse("Category does not exist", 404));
+  }
+
+  res.status(200).json({
+    success: true,
+    data: category,
+  });
+});
+
 /**
  * @desc      Update category by ID
  * @route     PUT /api/v1/category/:id
