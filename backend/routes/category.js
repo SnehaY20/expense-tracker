@@ -9,10 +9,10 @@ const {
 } = require("../controllers/category.js");
 const auth = require("../middleware/auth");
 
-router.get("/category", auth, getCategories);
-router.get("/category/:id", auth, getCategory);
-router.post("/category", auth, createCategory);
-router.put("/category/:id", auth, updateCategory);
-router.delete("/category/:id", auth, deleteCategory);
+router.get("/", auth, getCategories);
+router.get("/:id", auth, getCategory);
+router.post("/", auth, createCategory);
+router.put("/:id", auth, updateCategory);
+router.delete("/:id", auth, deleteCategory);
 
 module.exports = router;
