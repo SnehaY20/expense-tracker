@@ -5,33 +5,40 @@ import AuthForm from "../components/AuthForm";
 
 const Register = () => {
   const navigate = useNavigate();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    setSuccess("");
-    if (!name || !email || !password || !confirmPassword) {
-      setError("Please fill in all fields.");
-      return;
-    }
+
+    const { name, email, password, confirmPassword } = form;
+
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
       return;
     }
+
     setLoading(true);
     try {
       await registerUser({ name, email, password });
-      setLoading(false);
       navigate("/onboarding");
     } catch (err) {
       setError(err.message || "Something went wrong. Please try again.");
+    } finally {
       setLoading(false);
     }
   };
@@ -43,43 +50,48 @@ const Register = () => {
         {
           name: "name",
           type: "text",
-          value: name,
-          onChange: (e) => setName(e.target.value),
+          value: form.name,
+          onChange: handleChange,
           placeholder: "Name",
         },
         {
           name: "email",
           type: "email",
-          value: email,
-          onChange: (e) => setEmail(e.target.value),
+          value: form.email,
+          onChange: handleChange,
           placeholder: "Email",
         },
         {
           name: "password",
           type: "password",
-          value: password,
-          onChange: (e) => setPassword(e.target.value),
+          value: form.password,
+          onChange: handleChange,
           placeholder: "Password",
         },
         {
           name: "confirmPassword",
           type: "password",
-          value: confirmPassword,
-          onChange: (e) => setConfirmPassword(e.target.value),
+          value: form.confirmPassword,
+          onChange: handleChange,
           placeholder: "Confirm Password",
         },
       ]}
       onSubmit={handleSubmit}
       error={error}
-      success={success}
       loading={loading}
       leftButton={null}
       rightButton={
         <>
           <button
             type="submit"
-            className="w-full px-8 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:shadow-purple-500/25"
-            disabled={loading}
+            className="w-full px-8 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:shadow-purple-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={
+              !form.name ||
+              !form.email ||
+              !form.password ||
+              !form.confirmPassword ||
+              loading
+            }
           >
             {loading ? "Registering..." : "Register"}
           </button>
@@ -87,7 +99,7 @@ const Register = () => {
             <button
               className="flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-200 text-white hover:bg-white/10 hover:scale-105"
               type="button"
-              onClick={() => (window.location.href = "/login")}
+              onClick={() => navigate("/login")}
               disabled={loading}
             >
               <span>Login</span>

@@ -1,38 +1,45 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { ChevronLeft } from "lucide-react";
 import { loginUser } from "../api/auth";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from "../App";
 import AuthForm from "../components/AuthForm";
 
 const Login = () => {
-  const [loggedIn, setLoggedIn] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const mutation = useMutation({
     mutationFn: loginUser,
-    onSuccess: () => {
-      setLoggedIn(true);
+    onSuccess: (data) => {
+      localStorage.setItem("token", data.token);
+      login();
+      navigate("/");
+    },
+    onError: (error) => {
+      console.error("Login error:", error);
     },
   });
 
-  const handleLogin = () => {
+  const handleLogin = (e) => {
+    e.preventDefault();
+    if (!email || !password) return;
     mutation.mutate({ email, password });
   };
 
-  if (loggedIn) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20 text-center">
-          <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-200 to-gray-500 mb-4">
-            Logged in successfully
-          </h1>
-        </div>
-      </div>
-    );
-  }
+  const getErrorMessage = () => {
+    if (mutation.isError) {
+      return (
+        mutation.error?.response?.data?.message ||
+        mutation.error?.message ||
+        "Login failed. Please try again."
+      );
+    }
+    return "";
+  };
 
   return (
     <AuthForm
@@ -53,16 +60,13 @@ const Login = () => {
           placeholder: "Password",
         },
       ]}
-      onSubmit={(e) => {
-        e.preventDefault();
-        handleLogin();
-      }}
-      error={mutation.isError ? "Please fill in all fields." : ""}
+      onSubmit={handleLogin}
+      error={getErrorMessage()}
       loading={mutation.isLoading}
       leftButton={
         <button
           onClick={() => navigate("/register")}
-          className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-200 text-white hover:bg-white/10 hover:scale-105`}
+          className="flex items-center space-x-2 px-4 py-2 rounded-xl text-white hover:bg-white/10 transition duration-200"
           type="button"
         >
           <ChevronLeft size={20} />
@@ -72,8 +76,8 @@ const Login = () => {
       rightButton={
         <button
           type="submit"
-          className="w-full px-8 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:shadow-purple-500/25"
-          disabled={mutation.isLoading}
+          disabled={mutation.isLoading || !email || !password}
+          className="w-full px-8 py-3 rounded-xl font-semibold bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg transition transform hover:scale-105 disabled:opacity-50"
         >
           {mutation.isLoading ? "Logging in..." : "Login"}
         </button>

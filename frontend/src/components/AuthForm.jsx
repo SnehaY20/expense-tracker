@@ -106,6 +106,7 @@ const AuthForm = ({
                     {fields.map((field) => (
                       <input
                         key={field.name}
+                        name={field.name}
                         type={field.type}
                         value={field.value}
                         onChange={field.onChange}
@@ -136,6 +137,7 @@ const AuthForm = ({
                 {fields.map((field) => (
                   <input
                     key={field.name}
+                    name={field.name}
                     type={field.type}
                     value={field.value}
                     onChange={field.onChange}

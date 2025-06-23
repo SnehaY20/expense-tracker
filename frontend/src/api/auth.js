@@ -1,6 +1,6 @@
 // Login 
 export const loginUser = async ({ email, password }) => {
-  const response = await fetch("/api/v1/login", {
+  const response = await fetch("/api/v1/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
@@ -17,12 +17,15 @@ export const loginUser = async ({ email, password }) => {
     throw new Error(error.message || "Login failed");
   }
 
-  return response.json();
+  // return response.json();
+  const data = await response.json();
+  localStorage.setItem("token", data.token); 
+  return data;
 };
 
 // Register 
 export const registerUser = async ({ name, email, password }) => {
-  const response = await fetch("/api/v1/register", {
+  const response = await fetch("/api/v1/auth/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, email, password }),
