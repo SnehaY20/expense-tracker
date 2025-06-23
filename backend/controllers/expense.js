@@ -1,6 +1,6 @@
 const Expense = require("../models/expense.js");
 const Category = require("../models/category.js");
-const User = require("../models/user.js")
+const User = require("../models/user.js");
 const asyncHandler = require("../middleware/asyncHandler.js");
 const ErrorResponse = require("../utils/errorResponse.js");
 const category = require("../models/category.js");
@@ -11,43 +11,84 @@ const category = require("../models/category.js");
  * @access    Private
  */
 exports.getExpenses = asyncHandler(async (req, res, next) => {
-    const expenses = await Expense.find({user: req.user.id})
+  const expenses = await Expense.find({ user: req.user.id });
 
-    res.status(200).json({
-        success: true,
-        count: expenses.length,
-        data: expenses
-    })
-})
+  res.status(200).json({
+    success: true,
+    count: expenses.length,
+    data: expenses,
+  });
+});
 
 /**
  * @desc      Create expense
  * @route     POST /api/v1/expense/categoryId
  * @access    Private
  */
+exports.createExpense = asyncHandler(async (req, res, next) => {
+  const { title, amount, note } = req.body;
+  const categoryId = req.params.id;
 
-exports.createExpense = asyncHandler (async(req, res, next) => {
-    const {title, amount, note} = req.body;
-    const categoryId = req.params.id;
+  const expense = await Expense.findOne({
+    user: req.user.id,
+    category: categoryId,
+  });
 
-    
-    const expense = Expense.findOne({user: req.user.id, category: categoryId})
+  if (!expense) {
+    return next(new ErrorResponse("Invalid Credentials", 404));
+  }
 
-    if(!expense){
-        return next (new ErrorResponse("Invalid Credentials", 404))
+  const newExpense = await Expense.create({
+    title,
+    amount,
+    note,
+    category: categoryId,
+    user: req.user.id,
+  });
+
+  res.status(201).json({
+    success: true,
+    message: "Expense created successfully",
+    data: newExpense,
+  });
+});
+
+/**
+ * @desc      Update expense by id
+ * @route     PUT /api/v1/expense/id
+ * @access    Private
+ */
+exports.updateExpense = asyncHandler(async (req, res, next) => {
+  const { title, amount, note } = req.body;
+  const expenseId = req.params.id;
+
+  let expense = await Expense.findById(expenseId);
+
+  if (!expense) {
+    return next(new ErrorResponse("Expense doesn't exist", 404));
+  }
+
+  if (expense.user.toString() !== req.user.id) {
+    return next(
+      new ErrorResponse("Not authorized to update this expense", 401)
+    );
+  }
+
+  expense = await Expense.findByIdAndUpdate(
+    expenseId,
+    {
+      title,
+      amount,
+      note,
+    },
+    {
+      new: true,
     }
+  );
 
-    const newExpense = await Expense.create({
-        title,
-        amount,
-        note,
-        category: categoryId,
-        user: req.user.id
-    })
-
-    res.status(201).json({
-        success: true,
-        message: "Expense created successfully",
-        data: newExpense
-    })
-})
+  res.status(200).json({
+    success: true,
+    message: "Updated the expense successfully",
+    data: expense,
+  });
+});
