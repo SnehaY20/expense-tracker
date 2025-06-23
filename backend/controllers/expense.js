@@ -21,6 +21,32 @@ exports.getExpenses = asyncHandler(async (req, res, next) => {
 });
 
 /**
+ * @desc      Get expenses by category id
+ * @route     GET /api/v1/expense/id
+ * @access    Private
+ */
+exports.getExpensesByCategory = asyncHandler(async (req, res, next) => {
+  const categoryId = req.params.id;
+
+  const category = await Category.findById(categoryId);
+
+  if (!category) {
+    return next(new ErrorResponse("Category not found", 404));
+  }
+
+  const expenses = await Expense.find({
+    category: categoryId,
+    user: req.user.id,
+  });
+
+  res.status(200).json({
+    success: true,
+    count: expenses.length,
+    data: expenses,
+  });
+});
+
+/**
  * @desc      Create expense
  * @route     POST /api/v1/expense/categoryId
  * @access    Private
@@ -29,7 +55,7 @@ exports.createExpense = asyncHandler(async (req, res, next) => {
   const { title, amount, note } = req.body;
   const categoryId = req.params.id;
 
-  const expense = await Expense.findOne({
+  const expense = await Expense.find({
     user: req.user.id,
     category: categoryId,
   });
