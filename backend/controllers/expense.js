@@ -68,11 +68,11 @@ exports.updateExpense = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse("Expense doesn't exist", 404));
   }
 
-  if (expense.user.toString() !== req.user.id) {
-    return next(
-      new ErrorResponse("Not authorized to update this expense", 401)
-    );
-  }
+  //   if (expense.user.toString() !== req.user.id) {
+  //     return next(
+  //       new ErrorResponse("Not authorized to update this expense", 401)
+  //     );
+  //   }
 
   expense = await Expense.findByIdAndUpdate(
     expenseId,
@@ -88,7 +88,32 @@ exports.updateExpense = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    message: "Updated the expense successfully",
+    message: "Expense updated successfully",
     data: expense,
+  });
+});
+
+/**
+ * @desc      Delete expense by id
+ * @route     DELETE /api/v1/expense/id
+ * @access    Private
+ */
+exports.deleteExpense = asyncHandler(async (req, res, next) => {
+  const expenseId = req.params.id;
+
+  let expense = await Expense.findById(expenseId);
+
+  if (!expense) {
+    return next(new ErrorResponse("Expense doesn't exist", 404));
+  }
+
+  // if(expense.user.toString() !== req.user.id){
+  //     return next(new ErrorResponse("Not authorized to delete this expense", 401))
+  // }
+  expense = await Expense.findByIdAndDelete(expenseId);
+
+  res.status(200).json({
+    success: true,
+    message: "Expense deleted successfully",
   });
 });
