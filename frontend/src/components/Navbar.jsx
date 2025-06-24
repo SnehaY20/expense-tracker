@@ -1,19 +1,26 @@
 import React, { useState } from "react";
 import { Menu, X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../store/AuthStore";
 
 const navLinks = ["HOME", "CATEGORY", "EXPENSE", "DASHBOARD"];
 
 const Navbar = () => {
-  const [activeSection, setActiveSection] = useState("home");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { logout } = useAuth();
+
+  const getActiveSection = () => {
+    const path = location.pathname;
+    if (path === "/") return "home";
+    return path.substring(1); 
+  };
+
+  const activeSection = getActiveSection();
 
   const handleNavClick = (section) => {
     const route = section === "home" ? "/" : `/${section}`;
-    setActiveSection(section);
     setMobileMenuOpen(false);
     navigate(route);
   };
