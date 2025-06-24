@@ -7,6 +7,7 @@ const logger = require("../config/logger.js");
  * @access    Private
  */
 exports.getCategories = async (req, res) => {
+  const TAG = "[getCategories]";
   try {
     const userCategory = await Category.find({ user: req.user.id });
 
@@ -16,7 +17,7 @@ exports.getCategories = async (req, res) => {
       data: userCategory,
     });
   } catch (error) {
-    logger.error(`[getCategories] ${error.message}`);
+    logger.error(`${TAG} ${error.message}`);
     res.status(500).json({
       success: false,
       error: "Server Error",
@@ -30,12 +31,16 @@ exports.getCategories = async (req, res) => {
  * @access    Private
  */
 exports.createCategory = async (req, res) => {
+  const TAG = "[createCategory]";
   try {
     const { name } = req.body;
 
     const category = await Category.findOne({ user: req.user._id, name: name });
 
     if (category) {
+      logger.error(
+        `${TAG} Category with name ${name} already exists for user ${req.user._id}`
+      );
       return res.status(400).json({
         success: false,
         error: "Category already exists",
@@ -53,7 +58,7 @@ exports.createCategory = async (req, res) => {
       data: newCategory,
     });
   } catch (error) {
-    logger.error(`[createCategory] ${error.message}`);
+    logger.error(`${TAG} ${error.message}`);
     res.status(500).json({
       success: false,
       error: "Server Error",
@@ -67,11 +72,13 @@ exports.createCategory = async (req, res) => {
  * @access    Private
  */
 exports.getCategory = async (req, res) => {
+  const TAG = "[getCategory]";
   try {
     const categoryId = req.params.id;
     let category = await Category.findById(categoryId);
 
     if (!category) {
+      logger.error(`${TAG} Category does not exist`);
       return res.status(404).json({
         success: false,
         error: "Category does not exist",
@@ -83,7 +90,7 @@ exports.getCategory = async (req, res) => {
       data: category,
     });
   } catch (error) {
-    logger.error(`[getCategory] ${error.message}`);
+    logger.error(`${TAG} ${error.message}`);
     res.status(500).json({
       success: false,
       error: "Server Error",
@@ -97,6 +104,7 @@ exports.getCategory = async (req, res) => {
  * @access    Private
  */
 exports.updateCategory = async (req, res) => {
+  const TAG = "[updateCategory]";
   try {
     const { name } = req.body;
     const categoryId = req.params.id;
@@ -104,6 +112,7 @@ exports.updateCategory = async (req, res) => {
     let category = await Category.findById(categoryId);
 
     if (!category) {
+      logger.error(`${TAG} Category does not exist`);
       return res.status(404).json({
         success: false,
         error: "Category does not exist",
@@ -116,6 +125,7 @@ exports.updateCategory = async (req, res) => {
     });
 
     if (existingCategory) {
+      logger.error(`${TAG} Another category with the same name exists`);
       return res.status(400).json({
         success: false,
         error: "Another category with the same name exists",
@@ -137,7 +147,7 @@ exports.updateCategory = async (req, res) => {
       data: updatedCategory,
     });
   } catch (error) {
-    logger.error(`[updateCategory] ${error.message}`);
+    logger.error(`${TAG} ${error.message}`);
     res.status(500).json({
       success: false,
       error: "Server Error",
@@ -151,12 +161,14 @@ exports.updateCategory = async (req, res) => {
  * @access    Private
  */
 exports.deleteCategory = async (req, res) => {
+  const TAG = "[deleteCategory]";
   try {
     const categoryId = req.params.id;
 
     let category = await Category.findById(categoryId);
 
     if (!category) {
+      logger.error(`${TAG} Category does not exist`);
       return res.status(404).json({
         success: false,
         error: "Category does not exist",
@@ -170,7 +182,7 @@ exports.deleteCategory = async (req, res) => {
       message: "Category deleted successfully",
     });
   } catch (error) {
-    logger.error(`[deleteCategory] ${error.message}`);
+    logger.error(`${TAG} ${error.message}`);
     res.status(500).json({
       success: false,
       error: "Server Error",

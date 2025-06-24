@@ -9,10 +9,14 @@ const Category = require("../models/category.js");
  * @access    Public
  */
 exports.register = async (req, res) => {
+  const TAG = "[register]";
   try {
     const { name, email, password, role } = req.body;
 
     if (!name || !email || !password) {
+      logger.error(
+        `[register] Missing required fields.`
+      );
       return res.status(400).json({
         success: false,
         error: "Please provide all required fields",
@@ -21,6 +25,7 @@ exports.register = async (req, res) => {
 
     const userExists = await User.findOne({ email });
     if (userExists) {
+      logger.error(`[register] User with email ${email} already exists`);
       return res.status(400).json({
         success: false,
         error: "User already exists",
@@ -46,7 +51,7 @@ exports.register = async (req, res) => {
       token,
     });
   } catch (error) {
-    logger.error(`[register] ${error.message}`);
+    logger.error(`${TAG} ${error.message}`);
     res.status(500).json({
       success: false,
       error: "Server Error",
