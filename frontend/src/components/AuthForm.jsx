@@ -54,8 +54,8 @@ const AuthForm = ({
     );
  
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+  return (  //bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900
+   <div className="min-h-screen  flex items-center justify-center p-4">
       <div className="w-full max-w-md mx-auto">
         <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
           {onboardingSteps && typeof currentStep === "number" ? (

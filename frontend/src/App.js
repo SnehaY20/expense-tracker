@@ -1,60 +1,18 @@
-import React, { createContext, useContext, useState } from "react";
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useNavigate,
-  Navigate,
-} from "react-router-dom";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Login from "./pages/Login.jsx";
-import Register from "./pages/Register.jsx";
-import OnboardingSteps from "./components/OnboardingSteps.jsx";
-import Home from "./pages/Home.jsx";
-import Category from "./pages/Category.jsx";
+import { AuthProvider } from "./store/AuthStore";
+import Home from "./pages/Home";
+import Category from "./pages/Category";
+import Dashboard from "./pages/Dashboard";
+import Expenses from "./pages/Expenses";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import OnboardingPage from "./pages/OnboardingPage";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import AppLayout from "./layouts/AppLayout";
 
 const queryClient = new QueryClient();
-
-const AuthContext = createContext();
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
-
-const AuthProvider = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem("token"));
-
-  const login = () => setIsLoggedIn(true);
-  const logout = () => {
-    localStorage.removeItem("token");
-    setIsLoggedIn(false);
-  };
-
-  return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
-
-const OnboardingPage = () => {
-  const navigate = useNavigate();
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <OnboardingSteps onGetStarted={() => navigate("/login")} />
-    </div>
-  );
-};
-
-// ProtectedRoute component
-const ProtectedRoute = ({ children }) => {
-  const { isLoggedIn } = useAuth();
-  return isLoggedIn ? children : <Navigate to="/login" />;
-};
 
 function App() {
   return (
@@ -62,25 +20,61 @@ function App() {
       <AuthProvider>
         <Router>
           <Routes>
+            <Route path="/onboarding" element={<OnboardingPage />} />
             <Route
               path="/"
               element={
-                
+                <AppLayout>
                   <Home />
-               
+                </AppLayout>
               }
             />
             <Route
               path="/category"
               element={
                 <ProtectedRoute>
-                  <Category />
+                  <AppLayout>
+                    <Category />
+                  </AppLayout>
                 </ProtectedRoute>
               }
             />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/onboarding" element={<OnboardingPage />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Dashboard />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/expense"
+              element={
+                <ProtectedRoute>
+                  <AppLayout>
+                    <Expenses />
+                  </AppLayout>
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/login"
+              element={
+                <AppLayout>
+                  <Login />
+                </AppLayout>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <AppLayout>
+                  <Register />
+                </AppLayout>
+              }
+            />
           </Routes>
         </Router>
       </AuthProvider>

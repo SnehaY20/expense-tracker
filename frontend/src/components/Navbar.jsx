@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../App";
+import { useAuth } from "../store/AuthStore";
 
 const navLinks = ["HOME", "CATEGORY", "EXPENSE", "DASHBOARD"];
 
@@ -24,7 +24,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-6 left-0 right-0 z-50 w-full max-w-full px-0 flex items-center justify-center">
+    <nav className="fixed top-0 left-0 right-0 z-50 w-full max-w-full px-0 flex items-center justify-center mt-4">
       <div
         className="absolute left-6 inset-y-0 flex items-center text-2xl font-extrabold tracking-tight bg-gradient-to-r from-purple-400 via-pink-400 to-orange-300 bg-clip-text text-transparent select-none cursor-pointer"
         onClick={() => navigate("/")}
