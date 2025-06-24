@@ -1,163 +1,127 @@
 import React, { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import {
-  fetchCategories,
-  createCategory,
-  updateCategory,
-  deleteCategory,
-} from "../api/category.js";
+import { useQuery } from "@tanstack/react-query";
+import { fetchCategories } from "../api/category.js";
+import { fetchExpensesByCategory } from "../api/expense.js";
 import BackgroundLayout from "../components/BackgroundLayout";
+import CategoryForm from "../components/CategoryForm";
+import ExpenseTable from "../components/ExpenseTable";
 
 const Category = () => {
-  const [name, setName] = useState("");
-  const [editId, setEditId] = useState(null);
-  const [editName, setEditName] = useState("");
-  const queryClient = useQueryClient();
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+  const [selectedCategoryName, setSelectedCategoryName] = useState("");
+  const [showAddForm, setShowAddForm] = useState(false);
 
   // Get all categories
   const {
     data: categories = [],
-    isLoading,
-    isError,
-    error,
+    isLoading: categoriesLoading,
+    isError: categoriesError,
+    error: categoriesErrorMessage,
   } = useQuery({
     queryKey: ["categories"],
     queryFn: fetchCategories,
   });
 
-  // Create
-  const createMutation = useMutation({
-    mutationFn: createCategory,
-    onSuccess: () => {
-      queryClient.invalidateQueries(["categories"]);
-      setName("");
-    },
+  // Get expenses for selected category
+  const {
+    data: expenses = [],
+    isLoading: expensesLoading,
+    isError: expensesError,
+    error: expensesErrorMessage,
+  } = useQuery({
+    queryKey: ["expenses", selectedCategoryId],
+    queryFn: () => fetchExpensesByCategory(selectedCategoryId),
+    enabled: !!selectedCategoryId,
   });
 
-  // Update
-  const updateMutation = useMutation({
-    mutationFn: updateCategory,
-    onSuccess: () => {
-      queryClient.invalidateQueries(["categories"]);
-      setEditId(null);
-      setEditName("");
-    },
-  });
+  const handleCategoryClick = (category) => {
+    setSelectedCategoryId(category._id);
+    setSelectedCategoryName(category.name);
+  };
 
-  // Delete
-  const deleteMutation = useMutation({
-    mutationFn: deleteCategory,
-    onSuccess: () => queryClient.invalidateQueries(["categories"]),
-  });
+ 
 
-  const handleCreateSubmit = (e) => {
-    e.preventDefault();
-    const trimmedName = name.trim();
-    if (!trimmedName) return;
-
-    const isDuplicate = categories.some(
-      (cat) => cat.name.toLowerCase() === trimmedName.toLowerCase()
+  if (categoriesLoading)
+    return (
+      <div className="text-center mt-4 text-white">Loading categories...</div>
     );
-    if (isDuplicate) {
-      alert("Category already exists.");
-      return;
-    }
-
-    createMutation.mutate({ name: trimmedName });
-  };
-
-  const handleEditClick = (cat) => {
-    setEditId(cat._id);
-    setEditName(cat.name);
-  };
-
-  const handleUpdate = (catId) => {
-    const trimmedName = editName.trim();
-    if (!trimmedName) return;
-
-    const isDuplicate = categories.some(
-      (cat) =>
-        cat.name.toLowerCase() === trimmedName.toLowerCase() &&
-        cat._id !== catId
-    );
-    if (isDuplicate) {
-      alert("Category already exists.");
-      return;
-    }
-
-    updateMutation.mutate({ id: catId, name: trimmedName });
-  };
-
-  if (isLoading) return <div className="text-center mt-4">Loading...</div>;
-  if (isError)
+  if (categoriesError)
     return (
       <div className="text-center mt-4 text-red-500">
-        Error: {error.message}
+        Error: {categoriesErrorMessage.message}
       </div>
     );
 
   return (
     <BackgroundLayout>
-      <div className="pt-28 mb-8 max-w-md mx-auto p-4">
-        <form onSubmit={handleCreateSubmit} className="mb-4 flex gap-2">
-          <input
-            type="text"
-            placeholder="Enter category name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="border border-gray-300 px-3 py-2 w-full rounded"
-          />
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded"
-          >
-            Add
-          </button>
-        </form>
+      <div className="pt-28 mb-8 max-w-7xl mx-auto p-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Categories List */}
+          <div className="lg:col-span-1">
+            <div className="flex justify-between items-center mb-4">
+              <button
+                onClick={() => setShowAddForm(!showAddForm)}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 font-medium"
+              >
+                + Add Category
+              </button>
+            </div>
 
-        <ul className="space-y-2">
-          {categories.map((cat) => (
-            <li
-              key={cat._id}
-              className="flex justify-between items-center border p-2 rounded"
-            >
-              {editId === cat._id ? (
-                <input
-                  type="text"
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  className="border border-gray-300 px-2 py-1 rounded w-full mr-2"
-                />
+            {showAddForm && (
+              <CategoryForm
+                categories={categories}
+                onClose={() => setShowAddForm(false)}
+              />
+            )}
+
+            <div className="bg-white/10 backdrop-blur-md rounded-xl border border-white/20 p-4">
+              {categories.length === 0 ? (
+                <p className="text-gray-300 text-center py-4">
+                  No categories found
+                </p>
               ) : (
-                <span>{cat.name}</span>
+                <ul className="space-y-2">
+                  {categories.map((category) => (
+                    <li key={category._id}>
+                      <button
+                        onClick={() => handleCategoryClick(category)}
+                        className={`w-full text-left p-3 rounded-lg transition-all duration-200 ${
+                          selectedCategoryId === category._id
+                            ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg"
+                            : "bg-white/5 text-gray-200 hover:bg-white/10 hover:text-white"
+                        }`}
+                      >
+                        <span className="font-medium">{category.name}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
               )}
+            </div>
+          </div>
 
-              <div className="flex gap-2">
-                {editId === cat._id ? (
-                  <button
-                    onClick={() => handleUpdate(cat._id)}
-                    className="text-sm text-green-600 hover:underline"
-                  >
-                    Update
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => handleEditClick(cat)}
-                    className="text-sm text-blue-600 hover:underline"
-                  >
-                    Edit
-                  </button>
-                )}
-                <button
-                  onClick={() => deleteMutation.mutate(cat._id)}
-                  className="text-sm text-red-600 hover:underline"
-                >
-                  Delete
-                </button>
-              </div>
-            </li>
-          ))}
-        </ul>
+          {/* Expenses Table */}
+          <div className="lg:col-span-2">
+            {selectedCategoryName && (
+              <>
+                <h2 className="text-2xl font-bold text-white mb-4">
+                  {selectedCategoryName} Expenses
+                </h2>
+                <div className="bg-white/10 backdrop-blur-md rounded-xl border border-white/20 p-4">
+                  <ExpenseTable
+                    expenses={expenses}
+                    isLoading={expensesLoading}
+                    isError={expensesError}
+                    error={expensesErrorMessage}
+                    categories={categories}
+                    showTotal={true}
+                    showCategory={false}
+                  />
+                </div>
+              </>
+            )}
+          </div>
+        </div>
       </div>
     </BackgroundLayout>
   );
