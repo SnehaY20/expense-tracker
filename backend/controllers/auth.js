@@ -15,7 +15,7 @@ exports.register = async (req, res) => {
 
     if (!name || !email || !password) {
       logger.error(
-        `[register] Missing required fields.`
+        `${TAG} Missing required fields.`
       );
       return res.status(400).json({
         success: false,
@@ -25,7 +25,7 @@ exports.register = async (req, res) => {
 
     const userExists = await User.findOne({ email });
     if (userExists) {
-      logger.error(`[register] User with email ${email} already exists`);
+      logger.error(`${TAG} User with email ${email} already exists`);
       return res.status(400).json({
         success: false,
         error: "User already exists",

@@ -1,7 +1,6 @@
 const Expense = require("../models/expense.js");
 const Category = require("../models/category.js");
-const User = require("../models/user.js");
-const category = require("../models/category.js");
+const logger = require("../config/logger.js");
 
 /**
  * @desc      Get all expenses
@@ -9,6 +8,7 @@ const category = require("../models/category.js");
  * @access    Private
  */
 exports.getExpenses = async (req, res) => {
+  const TAG = "[getExpenses]";
   try {
     const expenses = await Expense.find({ user: req.user.id });
     res.status(200).json({
@@ -17,6 +17,7 @@ exports.getExpenses = async (req, res) => {
       data: expenses,
     });
   } catch (error) {
+    logger.error(`${TAG} ${error.message}`);
     res.status(500).json({ success: false, error: "Server Error" });
   }
 };
@@ -27,10 +28,12 @@ exports.getExpenses = async (req, res) => {
  * @access    Private
  */
 exports.getExpensesByCategory = async (req, res) => {
+  const TAG = "[getExpensesByCategory]";
   try {
     const categoryId = req.params.id;
     const category = await Category.findById(categoryId);
     if (!category) {
+      logger.error(`${TAG} Category not found: ${categoryId}`);
       return res
         .status(404)
         .json({ success: false, error: "Category not found" });
@@ -45,6 +48,7 @@ exports.getExpensesByCategory = async (req, res) => {
       data: expenses,
     });
   } catch (error) {
+    logger.error(`${TAG} ${error.message}`);
     res.status(500).json({ success: false, error: "Server Error" });
   }
 };
@@ -55,6 +59,7 @@ exports.getExpensesByCategory = async (req, res) => {
  * @access    Private
  */
 exports.createExpense = async (req, res) => {
+  const TAG = "[createExpense]";
   try {
     const { title, amount, note } = req.body;
     const categoryId = req.params.id;
@@ -63,6 +68,7 @@ exports.createExpense = async (req, res) => {
       category: categoryId,
     });
     if (!expense) {
+      logger.error(`${TAG} Invalid credentials or category: ${categoryId}`);
       return res
         .status(404)
         .json({ success: false, error: "Invalid Credentials" });
@@ -80,6 +86,7 @@ exports.createExpense = async (req, res) => {
       data: newExpense,
     });
   } catch (error) {
+    logger.error(`${TAG} ${error.message}`);
     res.status(500).json({ success: false, error: "Server Error" });
   }
 };
@@ -90,11 +97,13 @@ exports.createExpense = async (req, res) => {
  * @access    Private
  */
 exports.updateExpense = async (req, res) => {
+  const TAG = "[updateExpense]";
   try {
     const { title, amount, note } = req.body;
     const expenseId = req.params.id;
     let expense = await Expense.findById(expenseId);
     if (!expense) {
+      logger.error(`${TAG} Expense doesn't exist: ${expenseId}`);
       return res
         .status(404)
         .json({ success: false, error: "Expense doesn't exist" });
@@ -117,6 +126,7 @@ exports.updateExpense = async (req, res) => {
       data: expense,
     });
   } catch (error) {
+    logger.error(`${TAG} ${error.message}`);
     res.status(500).json({ success: false, error: "Server Error" });
   }
 };
@@ -127,10 +137,12 @@ exports.updateExpense = async (req, res) => {
  * @access    Private
  */
 exports.deleteExpense = async (req, res) => {
+  const TAG = "[deleteExpense]";
   try {
     const expenseId = req.params.id;
     let expense = await Expense.findById(expenseId);
     if (!expense) {
+      logger.error(`${TAG} Expense doesn't exist: ${expenseId}`);
       return res
         .status(404)
         .json({ success: false, error: "Expense doesn't exist" });
@@ -142,6 +154,7 @@ exports.deleteExpense = async (req, res) => {
       message: "Expense deleted successfully",
     });
   } catch (error) {
+    logger.error(`${TAG} ${error.message}`);
     res.status(500).json({ success: false, error: "Server Error" });
   }
 };
