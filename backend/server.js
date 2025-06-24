@@ -19,7 +19,7 @@ app.use(reqLogger);
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/category", categoriesRouter);
-app.use("/api/v1/expense", expensesRouter);
+app.use("/api/v1/expenses", expensesRouter);
 
 const PORT = process.env.PORT || 5000;
 
