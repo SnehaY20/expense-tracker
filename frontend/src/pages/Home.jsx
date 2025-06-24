@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { ArrowRight } from "lucide-react";
-import AnimatedBackground from "../components/AnimatedBackground";
-import AppInterface from "../components/AppInterface";
 import Navbar from "../components/Navbar";
-import { useAuth } from "../App";
+import { useAuth } from "../store/AuthStore";
+import BackgroundLayout from "../components/BackgroundLayout";
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
@@ -14,15 +13,14 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white overflow-hidden">
+    <BackgroundLayout>
       {isLoggedIn && <Navbar />}
-
-      <AnimatedBackground />
-
       <section
-        className={`relative z-10 px-6 py-20 ${isLoggedIn ? "pt-32" : ""}`}
+        className={`relative z-10 px-6 py-20 ${
+          isLoggedIn ? "pt-32" : "flex items-center justify-center min-h-[80vh]"
+        }`}
       >
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-7xl mx-auto w-full">
           {!isLoggedIn && (
             <div
               className={`text-center space-y-8 transition-all duration-1000 ${
@@ -33,7 +31,7 @@ export default function Home() {
             >
               <div className="space-y-6">
                 <h1 className="text-5xl lg:text-7xl font-light leading-tight tracking-tight">
-                  Track Your{" "}
+                  <span className="text-gray-400">Track Your </span>
                   <span className="font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-purple-600 bg-clip-text text-transparent">
                     Expenses
                   </span>
@@ -55,15 +53,16 @@ export default function Home() {
                     window.location.href = "/register";
                   }}
                 >
-                  <span>Start Tracking Free</span>
-                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <span className="bg-gradient-to-r from-gray-200 via-gray-100 to-gray-400 bg-clip-text text-transparent">
+                    Start Tracking Free
+                  </span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform text-gray-200" />
                 </button>
               </div>
             </div>
           )}
-          {isLoggedIn && <AppInterface isVisible={isVisible} />}
         </div>
       </section>
-    </div>
+    </BackgroundLayout>
   );
 }
