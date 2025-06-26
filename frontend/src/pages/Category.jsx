@@ -5,6 +5,7 @@ import { fetchExpensesByCategory } from "../api/expense.js";
 import BackgroundLayout from "../components/BackgroundLayout";
 import CategoryForm from "../components/CategoryForm";
 import ExpenseTable from "../components/ExpenseTable";
+import Card from "../components/Card";
 
 const Category = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
@@ -39,8 +40,6 @@ const Category = () => {
     setSelectedCategoryName(category.name);
   };
 
- 
-
   if (categoriesLoading)
     return (
       <div className="text-center mt-4 text-white">Loading categories...</div>
@@ -63,18 +62,29 @@ const Category = () => {
                 onClick={() => setShowAddForm(!showAddForm)}
                 className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 font-medium"
               >
-                + Add Category
+                 Add Category
               </button>
             </div>
 
             {showAddForm && (
-              <CategoryForm
-                categories={categories}
-                onClose={() => setShowAddForm(false)}
-              />
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+                <Card className="relative w-full max-w-md mx-4 p-8 mb-4">
+                  <button
+                    className="absolute top-3 right-3 text-gray-300 hover:text-white text-2xl font-bold"
+                    onClick={() => setShowAddForm(false)}
+                    aria-label="Close"
+                  >
+                    ×
+                  </button>
+                  <CategoryForm
+                    categories={categories}
+                    onClose={() => setShowAddForm(false)}
+                  />
+                </Card>
+              </div>
             )}
 
-            <div className="bg-white/10 backdrop-blur-md rounded-xl border border-white/20 p-4">
+            <Card>
               {categories.length === 0 ? (
                 <p className="text-gray-300 text-center py-4">
                   No categories found
@@ -97,7 +107,7 @@ const Category = () => {
                   ))}
                 </ul>
               )}
-            </div>
+            </Card>
           </div>
 
           {/* Expenses Table */}
@@ -107,17 +117,18 @@ const Category = () => {
                 <h2 className="text-2xl font-bold text-white mb-4">
                   {selectedCategoryName} Expenses
                 </h2>
-                <div className="bg-white/10 backdrop-blur-md rounded-xl border border-white/20 p-4">
+                <Card className="overflow-x-auto">
                   <ExpenseTable
                     expenses={expenses}
                     isLoading={expensesLoading}
                     isError={expensesError}
                     error={expensesErrorMessage}
                     categories={categories}
-                    showTotal={true}
+                    showTotal={false}
                     showCategory={false}
+                    showTotalBelow={true}
                   />
-                </div>
+                </Card>
               </>
             )}
           </div>

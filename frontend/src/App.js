@@ -8,9 +8,11 @@ import Dashboard from "./pages/Dashboard";
 import Expenses from "./pages/Expenses";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import OnboardingPage from "./pages/OnboardingPage";
+
 import ProtectedRoute from "./routes/ProtectedRoute";
 import AppLayout from "./layouts/AppLayout";
+import Profile from "./pages/Profile";
+import BackgroundLayout from "./components/BackgroundLayout";
 
 const queryClient = new QueryClient();
 
@@ -20,7 +22,7 @@ function App() {
       <AuthProvider>
         <Router>
           <Routes>
-            <Route path="/onboarding" element={<OnboardingPage />} />
+          
             <Route
               path="/"
               element={
@@ -73,6 +75,16 @@ function App() {
                 <AppLayout>
                   <Register />
                 </AppLayout>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <BackgroundLayout>
+                    <Profile />
+                  </BackgroundLayout>
+                </ProtectedRoute>
               }
             />
           </Routes>

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { registerUser } from "../api/auth";
 import AuthForm from "../components/AuthForm";
 import BackgroundLayout from "../components/BackgroundLayout";
+import Button from "../components/Button";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -84,9 +85,9 @@ const Register = () => {
         leftButton={null}
         rightButton={
           <>
-            <button
+            <Button
               type="submit"
-              className="w-full px-8 py-3 rounded-xl font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:shadow-purple-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-8 py-3 rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105 hover:shadow-purple-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={
                 !form.name ||
                 !form.email ||
@@ -96,32 +97,30 @@ const Register = () => {
               }
             >
               {loading ? "Registering..." : "Register"}
-            </button>
-            <div className="flex justify-end mt-4 w-full">
-              <button
-                className="flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-200 text-white hover:bg-white/10 hover:scale-105"
-                type="button"
-                onClick={() => navigate("/login")}
-                disabled={loading}
+            </Button>
+            <Button
+              className="flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-200 text-white hover:bg-white/10 hover:scale-105"
+              type="button"
+              onClick={() => navigate("/login")}
+              disabled={loading}
+            >
+              <span>Login</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="lucide lucide-chevron-right"
+                aria-hidden="true"
               >
-                <span>Login</span>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="lucide lucide-chevron-right"
-                  aria-hidden="true"
-                >
-                  <path d="m9 18 6-6-6-6"></path>
-                </svg>
-              </button>
-            </div>
+                <path d="m9 18 6-6-6-6"></path>
+              </svg>
+            </Button>
           </>
         }
       />

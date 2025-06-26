@@ -1,4 +1,6 @@
-// Login 
+import { getAuthHeaders } from "../utils/AuthHeaders";
+
+// Login
 export const loginUser = async ({ email, password }) => {
   const response = await fetch("/api/v1/auth/login", {
     method: "POST",
@@ -19,11 +21,11 @@ export const loginUser = async ({ email, password }) => {
 
   // return response.json();
   const data = await response.json();
-  localStorage.setItem("token", data.token); 
+  localStorage.setItem("token", data.token);
   return data;
 };
 
-// Register 
+// Register
 export const registerUser = async ({ name, email, password }) => {
   const response = await fetch("/api/v1/auth/register", {
     method: "POST",
@@ -39,5 +41,38 @@ export const registerUser = async ({ name, email, password }) => {
     }
   }
 
+  return response.json();
+};
+
+// profile
+export const fetchProfile = async () => {
+  const response = await fetch("/api/v1/auth/profile", {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "Failed to fetch profile");
+  }
+  return response.json();
+};
+
+// password
+export const updatePassword = async ({
+  userId,
+  currentPassword,
+  newPassword,
+}) => {
+  const response = await fetch(`/api/v1/auth/${userId}`, {
+    method: "PUT",
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "Failed to update password");
+  }
   return response.json();
 };
