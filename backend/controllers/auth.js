@@ -5,7 +5,7 @@ const Category = require("../models/category.js");
 
 /**
  * @desc      Register user
- * @route     POST /api/v1/register
+ * @route     POST /api/v1/auth/register
  * @access    Public
  */
 exports.register = async (req, res) => {
@@ -14,9 +14,7 @@ exports.register = async (req, res) => {
     const { name, email, password, role } = req.body;
 
     if (!name || !email || !password) {
-      logger.error(
-        `${TAG} Missing required fields.`
-      );
+      logger.error(`${TAG} Missing required fields.`);
       return res.status(400).json({
         success: false,
         error: "Please provide all required fields",
@@ -61,7 +59,7 @@ exports.register = async (req, res) => {
 
 /**
  * @desc      Login user
- * @route     POST /api/v1/login
+ * @route     POST /api/v1/auth/login
  * @access    Public
  */
 exports.login = async (req, res) => {
@@ -115,3 +113,61 @@ exports.login = async (req, res) => {
     });
   }
 };
+
+/**
+ * @desc      GET logged in user details
+ * @route     GET /api/v1/auth/profile
+ * @access    Private
+ */
+exports.profile = asyncHandler(async (req, res, next) => {
+  const TAG = "[getMe]";
+  try {
+    const user = await User.findById(req.user.id);
+    res.status(200).json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    logger.error(`${TAG} ${error.message}`);
+    return res.status(500).json({
+      success: false,
+      error: "Failed to fetch user details",
+    });
+  }
+});
+
+/**
+ * @desc      Update password
+ * @route     PUT /api/v1/auth/:id
+ * @access    Private
+ */
+exports.updatePassword = asyncHandler(async (req, res, next) => {
+  const TAG = "[updatePassword]";
+  try {
+    const user = await User.findById(req.user.id).select("+password");
+    const { currentPassword, newPassword } = req.body;
+
+    if (!(await user.matchPassword(currentPassword))) {
+      logger.error(`${TAG} Incorrect current password for user: ${user.email}`);
+      return res.status(401).json({
+        success: false,
+        error: "Password is incorrect",
+      });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Password updated successfully",
+    });
+  } catch (error) {
+    logger.error(`${TAG} ${error.message}`);
+    return res.status(500).json({
+      success: false,
+      error: "Failed to update password",
+    });
+  }
+});
+
