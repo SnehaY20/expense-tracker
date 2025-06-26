@@ -6,6 +6,7 @@ import { loginUser } from "../api/auth";
 import { useAuth } from "../store/AuthStore";
 import AuthForm from "../components/AuthForm";
 import BackgroundLayout from "../components/BackgroundLayout";
+import Button from "../components/Button";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -76,13 +77,13 @@ const Login = () => {
           </button>
         }
         rightButton={
-          <button
+          <Button
             type="submit"
             disabled={mutation.isLoading || !email || !password}
-            className="w-full px-8 py-3 rounded-xl font-semibold bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg transition transform hover:scale-105 disabled:opacity-50"
+            className="w-full px-8 py-3 rounded-xl shadow-lg transition transform hover:scale-105 disabled:opacity-50"
           >
             {mutation.isLoading ? "Logging in..." : "Login"}
-          </button>
+          </Button>
         }
       />
     </BackgroundLayout>

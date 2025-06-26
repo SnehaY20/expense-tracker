@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { createExpense } from "../api/expense";
+import Button from "./Button";
+import Input from "./Input";
 
 const ExpenseModal = ({
   isOpen,
@@ -15,6 +17,8 @@ const ExpenseModal = ({
   const [amount, setAmount] = useState("");
   const [note, setNote] = useState("");
   const [categoryId, setCategoryId] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   // expense mutation
   const createExpenseMutation = useMutation({
@@ -24,6 +28,8 @@ const ExpenseModal = ({
       setAmount("");
       setNote("");
       setCategoryId("");
+      setSelectedCategory(null);
+      setIsDropdownOpen(false);
       onClose();
       if (onSuccess) onSuccess();
     },
@@ -45,7 +51,15 @@ const ExpenseModal = ({
     setAmount("");
     setNote("");
     setCategoryId("");
+    setSelectedCategory(null);
+    setIsDropdownOpen(false);
     onClose();
+  };
+
+  const handleCategorySelect = (category) => {
+    setCategoryId(category._id);
+    setSelectedCategory(category);
+    setIsDropdownOpen(false);
   };
 
   if (!isOpen) return null;
@@ -60,59 +74,117 @@ const ExpenseModal = ({
         >
           ×
         </button>
-        <h2 className="text-xl font-semibold text-blue-300 mb-6 text-center">
+        <h2 className="text-xl font-semibold text-purple-300 mb-6 text-center">
           Add Expense
         </h2>
         <form onSubmit={handleExpenseSubmit} className="flex flex-col gap-4">
-          <select
-            value={categoryId}
-            onChange={(e) => setCategoryId(e.target.value)}
-            className="bg-white/20 border border-gray-400/30 outline-none rounded-lg px-6 py-3 text-base text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-400 transition"
-            required
-          >
-            <option value="">Category</option>
-            {isCategoriesLoading ? (
-              <option disabled>Loading...</option>
-            ) : (
-              categories.map((cat) => (
-                <option key={cat._id} value={cat._id}>
-                  {cat.name}
-                </option>
-              ))
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="bg-white/20 border border-gray-400/30 outline-none rounded-lg px-3 py-3 pr-12 text-base text-gray-400 focus:ring-2 focus:ring-purple-400 transition w-full appearance-none text-left"
+            >
+              {selectedCategory ? (
+                <span className="text-white">{selectedCategory.name}</span>
+              ) : (
+                "Category"
+              )}
+            </button>
+            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <svg
+                className={`w-4 h-4 text-gray-400 transition-transform ${
+                  isDropdownOpen ? "rotate-180" : ""
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+            {isDropdownOpen && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800/95 border border-gray-400/30 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
+                {isCategoriesLoading ? (
+                  <div className="px-4 py-3 text-gray-400">Loading...</div>
+                ) : (
+                  categories.map((cat) => (
+                    <button
+                      key={cat._id}
+                      type="button"
+                      onClick={() => handleCategorySelect(cat)}
+                      className="w-full px-4 py-3 text-left text-white hover:bg-blue-600 transition-colors border-b border-gray-600/30 last:border-b-0"
+                    >
+                      {cat.name}
+                    </button>
+                  ))
+                )}
+              </div>
             )}
-          </select>
-          <input
+          </div>
+          <Input
             type="text"
             placeholder="Title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="bg-white/20 border border-gray-400/30 outline-none rounded-lg px-6 py-3 text-base text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-400 transition"
             required
           />
-          <input
+          <Input
             type="text"
             placeholder="Note"
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            className="bg-white/20 border border-gray-400/30 outline-none rounded-lg px-6 py-3 text-base text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-400 transition"
           />
-          <input
-            type="number"
-            placeholder="Amount"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="bg-white/20 border border-gray-400/30 outline-none rounded-lg px-6 py-3 text-base text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-400 transition appearance-auto"
-            min="0"
-            step="0.01"
-            required
-          />
-          <button
+          <div className="relative">
+            <Input
+              // type="number"
+              placeholder="Amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              min={0}
+              step={0.01}
+              required
+              className="pr-12 appearance-none"
+              style={{ MozAppearance: "textfield" }}
+            />
+            <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex flex-col">
+              <button
+                type="button"
+                className="w-6 h-3 bg-white/20 hover:bg-white/30 border border-gray-400/30 text-white text-xs flex items-center justify-center rounded-t transition"
+                onClick={() =>
+                  setAmount((prev) =>
+                    prev ? (parseFloat(prev) + 1).toString() : "1"
+                  )
+                }
+              >
+                ▲
+              </button>
+              <button
+                type="button"
+                className="w-6 h-3 bg-white/20 hover:bg-white/30 border border-gray-400/30 text-white text-xs flex items-center justify-center rounded-b transition"
+                onClick={() =>
+                  setAmount((prev) =>
+                    prev && parseFloat(prev) > 0
+                      ? (parseFloat(prev) - 1).toString()
+                      : "0"
+                  )
+                }
+              >
+                ▼
+              </button>
+            </div>
+          </div>
+          <Button
             type="submit"
-            className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold shadow transition border border-gray-400/30 mt-2"
+            className="px-8 py-3 shadow transition border border-gray-400/30 mt-2"
             disabled={createExpenseMutation.isLoading || !categoryId}
           >
             {createExpenseMutation.isLoading ? "Adding..." : "Add expense"}
-          </button>
+          </Button>
           {isCategoriesError && (
             <div className="text-red-400 mb-2">
               Error: {categoriesError.message}
@@ -124,7 +196,7 @@ const ExpenseModal = ({
             </div>
           )}
           {createExpenseMutation.isSuccess && (
-            <div className="text-green-400 mb-2">
+            <div className="text-purple-300 mb-2">
               Expense added successfully!
             </div>
           )}

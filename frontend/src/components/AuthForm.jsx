@@ -1,4 +1,5 @@
 import React from "react";
+import Input from "./Input";
 
 const AuthForm = ({
   mode,
@@ -18,12 +19,12 @@ const AuthForm = ({
   let svg =
     mode === "login" ? (
       <svg
-        xmlns="http://www.w3.org/2000/svg" 
+        xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
         strokeWidth={1.5}
         stroke="currentColor"
-        className="w-10 h-10 text-white" 
+        className="w-10 h-10 text-white"
       >
         <path
           strokeLinecap="round"
@@ -47,15 +48,15 @@ const AuthForm = ({
         />
       </svg>
     );
-    formIcon = (
-      <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
-        {svg}
-      </div>
-    );
- 
+  formIcon = (
+    <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
+      {svg}
+    </div>
+  );
 
-  return (  //bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900
-   <div className="min-h-screen  flex items-center justify-center p-4">
+  return (
+    //bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900
+    <div className="min-h-screen  flex items-center justify-center p-4">
       <div className="w-full max-w-md mx-auto">
         <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
           {onboardingSteps && typeof currentStep === "number" ? (
@@ -104,14 +105,13 @@ const AuthForm = ({
                 {onboardingSteps[currentStep].isLogin && (
                   <form className="space-y-4" onSubmit={onSubmit}>
                     {fields.map((field) => (
-                      <input
+                      <Input
                         key={field.name}
                         name={field.name}
                         type={field.type}
                         value={field.value}
                         onChange={field.onChange}
                         placeholder={field.placeholder}
-                        className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                       />
                     ))}
                     {error && (
@@ -135,14 +135,13 @@ const AuthForm = ({
               </h2>
               <form className="space-y-4" onSubmit={onSubmit}>
                 {fields.map((field) => (
-                  <input
+                  <Input
                     key={field.name}
                     name={field.name}
                     type={field.type}
                     value={field.value}
                     onChange={field.onChange}
                     placeholder={field.placeholder}
-                    className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                   />
                 ))}
                 {error && (

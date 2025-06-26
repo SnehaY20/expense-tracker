@@ -5,8 +5,7 @@ import { fetchExpenses } from "../api/expense";
 import BackgroundLayout from "../components/BackgroundLayout";
 import ExpenseModal from "../components/ExpenseModal";
 import ExpenseTable from "../components/ExpenseTable";
-
-
+import Button from "../components/Button";
 
 const Expenses = () => {
   const [showModal, setShowModal] = useState(false);
@@ -34,19 +33,17 @@ const Expenses = () => {
     queryFn: fetchExpenses,
   });
 
-
-
   return (
     <BackgroundLayout>
       <div className="pt-28 mb-8 w-full px-2 sm:px-6">
-        <div className="bg-white/5 rounded-2xl p-6 text-white shadow-lg border border-gray-700/30 w-full">
+        <div className="bg-white/5 rounded-2xl p-6 text-white shadow-lg border border-gray-700/30 w-full overflow-x-auto">
           <div className="flex justify-end mb-6">
-            <button
+            <Button
               onClick={() => setShowModal(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold shadow transition border border-gray-400/30"
+              className="px-8 py-3 shadow transition border border-gray-400/30"
             >
               Add Expense
-            </button>
+            </Button>
           </div>
 
           <ExpenseModal
@@ -59,7 +56,7 @@ const Expenses = () => {
             onSuccess={refetchExpenses}
           />
 
-          <div className="text-center text-blue-400 text-xl font-semibold mb-4 mt-2 tracking-wide">
+          <div className="text-center text-white text-xl font-semibold mb-4 mt-2 tracking-wide">
             Recent Expenses
           </div>
 
@@ -69,7 +66,8 @@ const Expenses = () => {
             isError={isExpensesError}
             error={expensesError}
             categories={categories}
-            showTotal={true}
+            showTotal={false}
+            showTotalBelow={true}
           />
         </div>
       </div>

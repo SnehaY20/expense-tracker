@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../store/AuthStore";
+
+
 
 const navLinks = ["HOME", "CATEGORY", "EXPENSE", "DASHBOARD"];
 
@@ -9,12 +10,12 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout } = useAuth();
+
 
   const getActiveSection = () => {
     const path = location.pathname;
     if (path === "/") return "home";
-    return path.substring(1); 
+    return path.substring(1);
   };
 
   const activeSection = getActiveSection();
@@ -25,9 +26,10 @@ const Navbar = () => {
     navigate(route);
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
+
+
+  const handleProfile = () => {
+    navigate("/profile");
   };
 
   return (
@@ -70,10 +72,10 @@ const Navbar = () => {
         <button
           className="flex items-center text-base font-semibold tracking-wide uppercase text-gray-400 transition-all duration-300 group/navlink cursor-pointer bg-none border-none shadow-none px-0 py-0"
           style={{ letterSpacing: "0.08em", background: "none" }}
-          onClick={handleLogout}
+          onClick={handleProfile}
         >
           <span className="transition-all duration-300 group-hover/navlink:bg-gradient-to-r group-hover/navlink:from-purple-400 group-hover/navlink:via-pink-400 group-hover/navlink:to-orange-300 group-hover/navlink:bg-clip-text group-hover/navlink:text-transparent">
-            LOGOUT
+            PROFILE
           </span>
         </button>
       </div>
@@ -102,10 +104,10 @@ const Navbar = () => {
           <button
             className="block w-full text-left text-base font-semibold tracking-wide uppercase transition-colors duration-300 group/navlink cursor-pointer bg-none border-none shadow-none px-0 py-0 text-gray-400"
             style={{ letterSpacing: "0.08em", background: "none" }}
-            onClick={handleLogout}
+            onClick={handleProfile}
           >
             <span className="transition-all duration-300 group-hover/navlink:bg-gradient-to-r group-hover/navlink:from-purple-400 group-hover/navlink:via-pink-400 group-hover/navlink:to-orange-300 group-hover/navlink:bg-clip-text group-hover/navlink:text-transparent">
-              LOGOUT
+              PROFILE
             </span>
           </button>
         </div>
