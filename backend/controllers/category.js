@@ -1,5 +1,6 @@
 const Category = require("../models/category.js");
 const logger = require("../config/logger.js");
+const ERROR = require("../constants/errorMessages");
 
 /**
  * @desc      Get all categories
@@ -20,7 +21,7 @@ exports.getCategories = async (req, res) => {
     logger.error(`${TAG} ${error.message}`);
     res.status(500).json({
       success: false,
-      error: "Server Error",
+      error: ERROR.SERVER_ERROR,
     });
   }
 };
@@ -43,7 +44,7 @@ exports.createCategory = async (req, res) => {
       );
       return res.status(400).json({
         success: false,
-        error: "Category already exists",
+        error: ERROR.CATEGORY.EXISTS,
       });
     }
 
@@ -54,14 +55,14 @@ exports.createCategory = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "Category created successfully",
+      message: ERROR.CATEGORY.CREATED || "Category created successfully",
       data: newCategory,
     });
   } catch (error) {
     logger.error(`${TAG} ${error.message}`);
     res.status(500).json({
       success: false,
-      error: "Server Error",
+      error: ERROR.SERVER_ERROR,
     });
   }
 };
@@ -81,7 +82,7 @@ exports.getCategory = async (req, res) => {
       logger.error(`${TAG} Category does not exist`);
       return res.status(404).json({
         success: false,
-        error: "Category does not exist",
+        error: ERROR.CATEGORY.NOT_FOUND,
       });
     }
 
@@ -93,7 +94,7 @@ exports.getCategory = async (req, res) => {
     logger.error(`${TAG} ${error.message}`);
     res.status(500).json({
       success: false,
-      error: "Server Error",
+      error: ERROR.SERVER_ERROR,
     });
   }
 };
@@ -115,7 +116,7 @@ exports.updateCategory = async (req, res) => {
       logger.error(`${TAG} Category does not exist`);
       return res.status(404).json({
         success: false,
-        error: "Category does not exist",
+        error: ERROR.CATEGORY.NOT_FOUND,
       });
     }
 
@@ -128,7 +129,7 @@ exports.updateCategory = async (req, res) => {
       logger.error(`${TAG} Another category with the same name exists`);
       return res.status(400).json({
         success: false,
-        error: "Another category with the same name exists",
+        error: ERROR.CATEGORY.DUPLICATE,
       });
     }
 
@@ -143,14 +144,14 @@ exports.updateCategory = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Category updated successfully",
+      message: ERROR.CATEGORY.UPDATED || "Category updated successfully",
       data: updatedCategory,
     });
   } catch (error) {
     logger.error(`${TAG} ${error.message}`);
     res.status(500).json({
       success: false,
-      error: "Server Error",
+      error: ERROR.SERVER_ERROR,
     });
   }
 };
@@ -171,7 +172,7 @@ exports.deleteCategory = async (req, res) => {
       logger.error(`${TAG} Category does not exist`);
       return res.status(404).json({
         success: false,
-        error: "Category does not exist",
+        error: ERROR.CATEGORY.NOT_FOUND,
       });
     }
 
@@ -179,13 +180,13 @@ exports.deleteCategory = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Category deleted successfully",
+      message: ERROR.CATEGORY.DELETED || "Category deleted successfully",
     });
   } catch (error) {
     logger.error(`${TAG} ${error.message}`);
     res.status(500).json({
       success: false,
-      error: "Server Error",
+      error: ERROR.SERVER_ERROR,
     });
   }
 };

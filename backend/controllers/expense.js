@@ -1,6 +1,7 @@
 const Expense = require("../models/expense.js");
 const Category = require("../models/category.js");
 const logger = require("../config/logger.js");
+const ERROR = require("../constants/errorMessages");
 
 /**
  * @desc      Get all expenses
@@ -18,7 +19,7 @@ exports.getExpenses = async (req, res) => {
     });
   } catch (error) {
     logger.error(`${TAG} ${error.message}`);
-    res.status(500).json({ success: false, error: "Server Error" });
+    res.status(500).json({ success: false, error: ERROR.SERVER_ERROR });
   }
 };
 
@@ -36,7 +37,7 @@ exports.getExpensesByCategory = async (req, res) => {
       logger.error(`${TAG} Category not found: ${categoryId}`);
       return res
         .status(404)
-        .json({ success: false, error: "Category not found" });
+        .json({ success: false, error: ERROR.CATEGORY.NOT_FOUND });
     }
     const expenses = await Expense.find({
       category: categoryId,
@@ -49,7 +50,7 @@ exports.getExpensesByCategory = async (req, res) => {
     });
   } catch (error) {
     logger.error(`${TAG} ${error.message}`);
-    res.status(500).json({ success: false, error: "Server Error" });
+    res.status(500).json({ success: false, error: ERROR.SERVER_ERROR });
   }
 };
 
@@ -71,7 +72,7 @@ exports.createExpense = async (req, res) => {
       logger.error(`${TAG} Invalid credentials or category: ${categoryId}`);
       return res
         .status(404)
-        .json({ success: false, error: "Invalid Credentials" });
+        .json({ success: false, error: ERROR.AUTH.INVALID_CREDENTIALS });
     }
     const newExpense = await Expense.create({
       title,
@@ -82,12 +83,12 @@ exports.createExpense = async (req, res) => {
     });
     res.status(201).json({
       success: true,
-      message: "Expense created successfully",
+      message: ERROR.EXPENSE.CREATED,
       data: newExpense,
     });
   } catch (error) {
     logger.error(`${TAG} ${error.message}`);
-    res.status(500).json({ success: false, error: "Server Error" });
+    res.status(500).json({ success: false, error: ERROR.SERVER_ERROR });
   }
 };
 
@@ -106,7 +107,7 @@ exports.updateExpense = async (req, res) => {
       logger.error(`${TAG} Expense doesn't exist: ${expenseId}`);
       return res
         .status(404)
-        .json({ success: false, error: "Expense doesn't exist" });
+        .json({ success: false, error: ERROR.EXPENSE.NOT_FOUND });
     }
 
     expense = await Expense.findByIdAndUpdate(
@@ -122,12 +123,12 @@ exports.updateExpense = async (req, res) => {
     );
     res.status(200).json({
       success: true,
-      message: "Expense updated successfully",
+      message: ERROR.EXPENSE.UPDATED,
       data: expense,
     });
   } catch (error) {
     logger.error(`${TAG} ${error.message}`);
-    res.status(500).json({ success: false, error: "Server Error" });
+    res.status(500).json({ success: false, error: ERROR.SERVER_ERROR });
   }
 };
 
@@ -145,16 +146,16 @@ exports.deleteExpense = async (req, res) => {
       logger.error(`${TAG} Expense doesn't exist: ${expenseId}`);
       return res
         .status(404)
-        .json({ success: false, error: "Expense doesn't exist" });
+        .json({ success: false, error: ERROR.EXPENSE.NOT_FOUND });
     }
 
     expense = await Expense.findByIdAndDelete(expenseId);
     res.status(200).json({
       success: true,
-      message: "Expense deleted successfully",
+      message: ERROR.EXPENSE.DELETED,
     });
   } catch (error) {
     logger.error(`${TAG} ${error.message}`);
-    res.status(500).json({ success: false, error: "Server Error" });
+    res.status(500).json({ success: false, error: ERROR.SERVER_ERROR });
   }
 };
