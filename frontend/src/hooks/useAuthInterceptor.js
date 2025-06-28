@@ -12,7 +12,17 @@ const useAuthInterceptor = () => {
     window.fetch = async (...args) => {
       const response = await originalFetch(...args);
 
-      if (response.status === 401) {
+      // Don't redirect for password update endpoints (401 is expected for wrong current password)
+      const url = args[0];
+      const method = args[1]?.method || "GET";
+      const isPasswordUpdate =
+        typeof url === "string" &&
+        url.includes("/api/v1/auth/") &&
+        method === "PUT" &&
+        !url.includes("/login") &&
+        !url.includes("/register");
+
+      if (response.status === 401 && !isPasswordUpdate) {
         logout();
         navigate("/login");
       }

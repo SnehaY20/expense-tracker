@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import useAuthInterceptor from "../hooks/useAuthIterceptor"
+import useAuthInterceptor from "../hooks/useAuthInterceptor";
 
 import Home from "../pages/Home";
 import Category from "../pages/Category";
@@ -12,21 +12,53 @@ import Profile from "../pages/Profile";
 
 import AppLayout from "../layouts/AppLayout";
 import BackgroundLayout from "../components/BackgroundLayout";
-import ProtectedRoute from "./ProtectedRoute"
+import ProtectedRoute from "./ProtectedRoute";
 
 const AppRoutes = () => {
-  useAuthInterceptor(); 
+  useAuthInterceptor();
 
   return (
-    <Routes>
-      <Route path="/" element={<AppLayout><Home /></AppLayout>} />
-      <Route path="/category" element={<ProtectedRoute><AppLayout><Category /></AppLayout></ProtectedRoute>} />
-      <Route path="/dashboard" element={<ProtectedRoute><AppLayout><Dashboard /></AppLayout></ProtectedRoute>} />
-      <Route path="/expense" element={<ProtectedRoute><AppLayout><Expenses /></AppLayout></ProtectedRoute>} />
-      <Route path="/login" element={<AppLayout><Login /></AppLayout>} />
-      <Route path="/register" element={<AppLayout><Register /></AppLayout>} />
-      <Route path="/profile" element={<ProtectedRoute><BackgroundLayout><Profile /></BackgroundLayout></ProtectedRoute>} />
-    </Routes>
+    <AppLayout>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route
+          path="/category"
+          element={
+            <ProtectedRoute>
+              <Category />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/expense"
+          element={
+            <ProtectedRoute>
+              <Expenses />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <BackgroundLayout>
+                <Profile />
+              </BackgroundLayout>
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </AppLayout>
   );
 };
 

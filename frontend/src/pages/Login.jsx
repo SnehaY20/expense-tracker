@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { ChevronLeft } from "lucide-react";
 import { loginUser } from "../api/auth";
 import { useAuth } from "../store/AuthStore";
+import { showSuccessToast, showErrorToast } from "../utils/toast";
 import AuthForm from "../components/AuthForm";
 import BackgroundLayout from "../components/BackgroundLayout";
 import Button from "../components/Button";
@@ -19,16 +20,21 @@ const Login = () => {
     onSuccess: (data) => {
       localStorage.setItem("token", data.token);
       login();
+      showSuccessToast("Login successful! Welcome back!");
       navigate("/");
     },
     onError: (error) => {
       console.error("Login error:", error);
+      showErrorToast(error.message || "Login failed. Please try again.");
     },
   });
 
   const handleLogin = (e) => {
     e.preventDefault();
-    if (!email || !password) return;
+    if (!email || !password) {
+      showErrorToast("Please fill in all fields");
+      return;
+    }
     mutation.mutate({ email, password });
   };
 

@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchCategories } from "../api/category.js";
-import { fetchExpensesByCategory } from "../api/expense.js";
+import { fetchCategories } from "../api/category";
+import { fetchExpensesByCategory } from "../api/expense";
 import BackgroundLayout from "../components/BackgroundLayout";
 import CategoryForm from "../components/CategoryForm";
 import ExpenseTable from "../components/ExpenseTable";
 import Card from "../components/Card";
+import Spinner from "../components/Spinner";
 
 const Category = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
@@ -42,7 +43,9 @@ const Category = () => {
 
   if (categoriesLoading)
     return (
-      <div className="text-center mt-4 text-white">Loading categories...</div>
+      <div className="text-center mt-4">
+        <Spinner size="lg" />
+      </div>
     );
   if (categoriesError)
     return (
@@ -62,7 +65,7 @@ const Category = () => {
                 onClick={() => setShowAddForm(!showAddForm)}
                 className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 font-medium"
               >
-                 Add Category
+                Add Category
               </button>
             </div>
 

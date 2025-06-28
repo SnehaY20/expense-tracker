@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createCategory } from "../api/category.js";
+import { showSuccessToast, showErrorToast } from "../utils/toast";
 import Button from "./Button";
 import Input from "./Input";
 
@@ -14,20 +15,27 @@ const CategoryForm = ({ categories = [], onClose }) => {
     onSuccess: () => {
       queryClient.invalidateQueries(["categories"]);
       setNewCategoryName("");
+      showSuccessToast("Category added successfully!");
       if (onClose) onClose();
+    },
+    onError: (error) => {
+      showErrorToast(error.message || "Failed to add category");
     },
   });
 
   const handleAddCategory = (e) => {
     e.preventDefault();
     const trimmedName = newCategoryName.trim();
-    if (!trimmedName) return;
+    if (!trimmedName) {
+      showErrorToast("Please enter a category name");
+      return;
+    }
 
     const isDuplicate = categories.some(
       (cat) => cat.name.toLowerCase() === trimmedName.toLowerCase()
     );
     if (isDuplicate) {
-      alert("Category already exists.");
+      showErrorToast("Category already exists.");
       return;
     }
 
