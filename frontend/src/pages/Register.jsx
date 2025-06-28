@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../api/auth";
+import { showSuccessToast, showErrorToast } from "../utils/toast";
 import AuthForm from "../components/AuthForm";
 import BackgroundLayout from "../components/BackgroundLayout";
 import Button from "../components/Button";
@@ -30,16 +31,20 @@ const Register = () => {
     const { name, email, password, confirmPassword } = form;
 
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      showErrorToast("Passwords do not match.");
       return;
     }
 
     setLoading(true);
     try {
       await registerUser({ name, email, password });
+      showSuccessToast("Registration successful! Please login.");
       navigate("/onboarding");
     } catch (err) {
-      setError(err.message || "Something went wrong. Please try again.");
+      const errorMessage =
+        err.message || "Something went wrong. Please try again.";
+      showErrorToast(errorMessage);
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

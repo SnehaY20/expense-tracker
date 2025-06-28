@@ -19,7 +19,6 @@ export const loginUser = async ({ email, password }) => {
     throw new Error(error.message || "Login failed");
   }
 
-  // return response.json();
   const data = await response.json();
   localStorage.setItem("token", data.token);
   return data;
@@ -72,6 +71,10 @@ export const updatePassword = async ({
 
   if (!response.ok) {
     const error = await response.json();
+    // Handle specific error for wrong current password
+    if (response.status === 401) {
+      throw new Error("Current password is incorrect");
+    }
     throw new Error(error.error || "Failed to update password");
   }
   return response.json();

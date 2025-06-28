@@ -1,4 +1,5 @@
 import React from "react";
+import Spinner from "./Spinner";
 
 function formatDate(dateString) {
   return new Date(dateString).toLocaleDateString("en-IN", {
@@ -85,9 +86,9 @@ const ExpenseTable = ({
               <tr>
                 <td
                   colSpan={showCategory ? 6 : 5}
-                  className="text-center py-6 text-gray-400"
+                  className="text-center py-12"
                 >
-                  Loading expenses...
+                  <Spinner size="lg" />
                 </td>
               </tr>
             ) : isError ? (

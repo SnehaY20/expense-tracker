@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createCategory } from "../api/category.js";
+import { showSuccessToast, showErrorToast } from "../utils/toast";
 import Button from "./Button";
 import Input from "./Input";
+import Spinner from "./Spinner";
 
 const CategoryForm = ({ categories = [], onClose }) => {
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -14,20 +16,27 @@ const CategoryForm = ({ categories = [], onClose }) => {
     onSuccess: () => {
       queryClient.invalidateQueries(["categories"]);
       setNewCategoryName("");
+      showSuccessToast("Category added successfully!");
       if (onClose) onClose();
+    },
+    onError: (error) => {
+      showErrorToast(error.message || "Failed to add category");
     },
   });
 
   const handleAddCategory = (e) => {
     e.preventDefault();
     const trimmedName = newCategoryName.trim();
-    if (!trimmedName) return;
+    if (!trimmedName) {
+      showErrorToast("Please enter a category name");
+      return;
+    }
 
     const isDuplicate = categories.some(
       (cat) => cat.name.toLowerCase() === trimmedName.toLowerCase()
     );
     if (isDuplicate) {
-      alert("Category already exists.");
+      showErrorToast("Category already exists.");
       return;
     }
 
@@ -53,7 +62,14 @@ const CategoryForm = ({ categories = [], onClose }) => {
           disabled={createMutation.isLoading}
           className="px-4 py-2 disabled:opacity-50"
         >
-          {createMutation.isLoading ? "Adding..." : "Add"}
+          {createMutation.isLoading ? (
+            <div className="flex items-center justify-center">
+              <Spinner size="sm" className="mr-2" />
+              Adding...
+            </div>
+          ) : (
+            "Add"
+          )}
         </Button>
         <Button
           type="button"

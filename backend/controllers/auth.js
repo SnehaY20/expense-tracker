@@ -2,6 +2,7 @@ const User = require("../models/user.js");
 const asyncHandler = require("../middleware/asyncHandler.js");
 const logger = require("../config/logger.js");
 const Category = require("../models/category.js");
+const ERROR = require("../constants/errorMessages");
 
 /**
  * @desc      Register user
@@ -17,7 +18,7 @@ exports.register = async (req, res) => {
       logger.error(`${TAG} Missing required fields.`);
       return res.status(400).json({
         success: false,
-        error: "Please provide all required fields",
+        error: ERROR.AUTH.MISSING_FIELDS,
       });
     }
 
@@ -26,7 +27,7 @@ exports.register = async (req, res) => {
       logger.error(`${TAG} User with email ${email} already exists`);
       return res.status(400).json({
         success: false,
-        error: "User already exists",
+        error: ERROR.AUTH.USER_ALREADY_EXISTS || "User already exists",
       });
     }
 
@@ -52,7 +53,7 @@ exports.register = async (req, res) => {
     logger.error(`${TAG} ${error.message}`);
     res.status(500).json({
       success: false,
-      error: "Server Error",
+      error: ERROR.SERVER_ERROR,
     });
   }
 };
@@ -68,34 +69,31 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validate email & password
     if (!email || !password) {
       logger.error(`${TAG} Invalid email or password`);
       return res.status(400).json({
         success: false,
-        error: "Please provide an email and password",
+        error: ERROR.AUTH.MISSING_FIELDS,
       });
     }
 
-    // Check for user
     const user = await User.findOne({ email }).select("+password");
 
     if (!user) {
       logger.error(`${TAG} User does not exist in the database`);
       return res.status(401).json({
         success: false,
-        error: "Invalid credentials",
+        error: ERROR.AUTH.INVALID_CREDENTIALS,
       });
     }
 
-    // Check if password matches
     const isMatch = await user.matchPassword(password);
 
     if (!isMatch) {
       logger.error(`${TAG} Invalid credentials`);
       return res.status(401).json({
         success: false,
-        error: "Invalid credentials",
+        error: ERROR.AUTH.INVALID_CREDENTIALS,
       });
     }
 
@@ -109,7 +107,7 @@ exports.login = async (req, res) => {
     logger.error(`${TAG} ${error.message}`);
     res.status(500).json({
       success: false,
-      error: "Server Error",
+      error: ERROR.SERVER_ERROR,
     });
   }
 };
@@ -131,7 +129,7 @@ exports.profile = asyncHandler(async (req, res, next) => {
     logger.error(`${TAG} ${error.message}`);
     return res.status(500).json({
       success: false,
-      error: "Failed to fetch user details",
+      error: ERROR.SERVER_ERROR,
     });
   }
 });
@@ -151,7 +149,7 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
       logger.error(`${TAG} Incorrect current password for user: ${user.email}`);
       return res.status(401).json({
         success: false,
-        error: "Password is incorrect",
+        error: ERROR.PASSWORD.INCORRECT,
       });
     }
 
@@ -160,14 +158,13 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: "Password updated successfully",
+      message: ERROR.PASSWORD.UPDATED,
     });
   } catch (error) {
     logger.error(`${TAG} ${error.message}`);
     return res.status(500).json({
       success: false,
-      error: "Failed to update password",
+      error: ERROR.SERVER_ERROR,
     });
   }
 });
-

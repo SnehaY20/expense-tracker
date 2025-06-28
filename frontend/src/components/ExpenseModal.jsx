@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { createExpense } from "../api/expense";
+import { showSuccessToast, showErrorToast } from "../utils/toast";
 import Button from "./Button";
 import Input from "./Input";
+import Spinner from "./Spinner";
 
 const ExpenseModal = ({
   isOpen,
@@ -30,14 +32,21 @@ const ExpenseModal = ({
       setCategoryId("");
       setSelectedCategory(null);
       setIsDropdownOpen(false);
+      showSuccessToast("Expense added successfully!");
       onClose();
       if (onSuccess) onSuccess();
+    },
+    onError: (error) => {
+      showErrorToast(error.message || "Failed to add expense");
     },
   });
 
   const handleExpenseSubmit = (e) => {
     e.preventDefault();
-    if (!title.trim() || !amount || !categoryId) return;
+    if (!title.trim() || !amount || !categoryId) {
+      showErrorToast("Please fill in all required fields");
+      return;
+    }
     createExpenseMutation.mutate({
       categoryId,
       title: title.trim(),
@@ -110,7 +119,9 @@ const ExpenseModal = ({
             {isDropdownOpen && (
               <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800/95 border border-gray-400/30 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
                 {isCategoriesLoading ? (
-                  <div className="px-4 py-3 text-gray-400">Loading...</div>
+                  <div className="px-4 py-3 flex justify-center">
+                    <Spinner size="sm" />
+                  </div>
                 ) : (
                   categories.map((cat) => (
                     <button
@@ -183,7 +194,14 @@ const ExpenseModal = ({
             className="px-8 py-3 shadow transition border border-gray-400/30 mt-2"
             disabled={createExpenseMutation.isLoading || !categoryId}
           >
-            {createExpenseMutation.isLoading ? "Adding..." : "Add expense"}
+            {createExpenseMutation.isLoading ? (
+              <div className="flex items-center justify-center">
+                <Spinner size="sm" className="mr-2" />
+                Adding...
+              </div>
+            ) : (
+              "Add expense"
+            )}
           </Button>
           {isCategoriesError && (
             <div className="text-red-400 mb-2">
@@ -193,11 +211,6 @@ const ExpenseModal = ({
           {createExpenseMutation.isError && (
             <div className="text-red-400 mb-2">
               Error: {createExpenseMutation.error.message}
-            </div>
-          )}
-          {createExpenseMutation.isSuccess && (
-            <div className="text-purple-300 mb-2">
-              Expense added successfully!
             </div>
           )}
         </form>
