@@ -6,6 +6,7 @@ import BackgroundLayout from "../components/BackgroundLayout";
 import ExpenseModal from "../components/ExpenseModal";
 import ExpenseTable from "../components/ExpenseTable";
 import Button from "../components/Button";
+import { ExpenseTableSkeleton } from "../components/Skeleton";
 
 const Expenses = () => {
   const [showModal, setShowModal] = useState(false);
@@ -60,15 +61,19 @@ const Expenses = () => {
             Recent Expenses
           </div>
 
-          <ExpenseTable
-            expenses={expenses}
-            isLoading={isExpensesLoading}
-            isError={isExpensesError}
-            error={expensesError}
-            categories={categories}
-            showTotal={false}
-            showTotalBelow={true}
-          />
+          {isExpensesLoading ? (
+            <ExpenseTableSkeleton showCategory={true} />
+          ) : (
+            <ExpenseTable
+              expenses={expenses}
+              isLoading={isExpensesLoading}
+              isError={isExpensesError}
+              error={expensesError}
+              categories={categories}
+              showTotal={false}
+              showTotalBelow={true}
+            />
+          )}
         </div>
       </div>
     </BackgroundLayout>

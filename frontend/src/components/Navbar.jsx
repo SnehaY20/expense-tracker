@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 
-
-
 const navLinks = ["HOME", "CATEGORY", "EXPENSE", "DASHBOARD"];
+
+const navLinkSpanClass =
+  "transition-all duration-300 group-hover/navlink:bg-gradient-to-r group-hover/navlink:from-purple-400 group-hover/navlink:via-pink-400 group-hover/navlink:to-orange-300 group-hover/navlink:bg-clip-text group-hover/navlink:text-transparent";
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-
 
   const getActiveSection = () => {
     const path = location.pathname;
@@ -26,11 +26,11 @@ const Navbar = () => {
     navigate(route);
   };
 
-
-
   const handleProfile = () => {
     navigate("/profile");
   };
+
+  const isProfilePage = location.pathname === "/profile";
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 w-full max-w-full px-0 flex items-center justify-center mt-4">
@@ -51,9 +51,7 @@ const Navbar = () => {
               }`}
               style={{ letterSpacing: "0.08em" }}
             >
-              <span className="transition-all duration-300 group-hover/navlink:bg-gradient-to-r group-hover/navlink:from-purple-400 group-hover/navlink:via-pink-400 group-hover/navlink:to-orange-300 group-hover/navlink:bg-clip-text group-hover/navlink:text-transparent">
-                {section}
-              </span>
+              <span className={navLinkSpanClass}>{section}</span>
             </button>
           ))}
         </div>
@@ -68,17 +66,17 @@ const Navbar = () => {
           )}
         </button>
       </div>
-      <div className="absolute right-6 inset-y-0 flex items-center">
-        <button
-          className="flex items-center text-base font-semibold tracking-wide uppercase text-gray-400 transition-all duration-300 group/navlink cursor-pointer bg-none border-none shadow-none px-0 py-0"
-          style={{ letterSpacing: "0.08em", background: "none" }}
-          onClick={handleProfile}
-        >
-          <span className="transition-all duration-300 group-hover/navlink:bg-gradient-to-r group-hover/navlink:from-purple-400 group-hover/navlink:via-pink-400 group-hover/navlink:to-orange-300 group-hover/navlink:bg-clip-text group-hover/navlink:text-transparent">
-            PROFILE
-          </span>
-        </button>
-      </div>
+      {!isProfilePage && (
+        <div className="absolute right-6 inset-y-0 flex items-center">
+          <button
+            className="flex items-center text-base font-semibold tracking-wide uppercase text-gray-400 transition-all duration-300 group/navlink cursor-pointer bg-none border-none shadow-none px-0 py-0"
+            style={{ letterSpacing: "0.08em", background: "none" }}
+            onClick={handleProfile}
+          >
+            <span className={navLinkSpanClass}>PROFILE</span>
+          </button>
+        </div>
+      )}
       <div
         className={`lg:hidden absolute left-0 right-0 mt-2 bg-slate-950/90 backdrop-blur-xl border-b border-white/10 rounded-2xl transition-all duration-300 ${
           mobileMenuOpen ? "opacity-100 visible" : "opacity-0 invisible"
@@ -96,20 +94,18 @@ const Navbar = () => {
               }`}
               style={{ letterSpacing: "0.08em" }}
             >
-              <span className="transition-all duration-300 group-hover/navlink:bg-gradient-to-r group-hover/navlink:from-purple-400 group-hover/navlink:via-pink-400 group-hover/navlink:to-orange-300 group-hover/navlink:bg-clip-text group-hover/navlink:text-transparent">
-                {section}
-              </span>
+              <span className={navLinkSpanClass}>{section}</span>
             </button>
           ))}
-          <button
-            className="block w-full text-left text-base font-semibold tracking-wide uppercase transition-colors duration-300 group/navlink cursor-pointer bg-none border-none shadow-none px-0 py-0 text-gray-400"
-            style={{ letterSpacing: "0.08em", background: "none" }}
-            onClick={handleProfile}
-          >
-            <span className="transition-all duration-300 group-hover/navlink:bg-gradient-to-r group-hover/navlink:from-purple-400 group-hover/navlink:via-pink-400 group-hover/navlink:to-orange-300 group-hover/navlink:bg-clip-text group-hover/navlink:text-transparent">
-              PROFILE
-            </span>
-          </button>
+          {!isProfilePage && (
+            <button
+              className="block w-full text-left text-base font-semibold tracking-wide uppercase transition-colors duration-300 group/navlink cursor-pointer bg-none border-none shadow-none px-0 py-0 text-gray-400"
+              style={{ letterSpacing: "0.08em", background: "none" }}
+              onClick={handleProfile}
+            >
+              <span className={navLinkSpanClass}>PROFILE</span>
+            </button>
+          )}
         </div>
       </div>
     </nav>

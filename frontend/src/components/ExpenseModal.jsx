@@ -194,7 +194,14 @@ const ExpenseModal = ({
             className="px-8 py-3 shadow transition border border-gray-400/30 mt-2"
             disabled={createExpenseMutation.isLoading || !categoryId}
           >
-            {createExpenseMutation.isLoading ? "Adding..." : "Add expense"}
+            {createExpenseMutation.isLoading ? (
+              <div className="flex items-center justify-center">
+                <Spinner size="sm" className="mr-2" />
+                Adding...
+              </div>
+            ) : (
+              "Add expense"
+            )}
           </Button>
           {isCategoriesError && (
             <div className="text-red-400 mb-2">

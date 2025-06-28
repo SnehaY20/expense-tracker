@@ -6,7 +6,10 @@ import BackgroundLayout from "../components/BackgroundLayout";
 import CategoryForm from "../components/CategoryForm";
 import ExpenseTable from "../components/ExpenseTable";
 import Card from "../components/Card";
-import Spinner from "../components/Spinner";
+import {
+  CategoryListSkeleton,
+  ExpenseTableSkeleton,
+} from "../components/Skeleton";
 
 const Category = () => {
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
@@ -17,8 +20,6 @@ const Category = () => {
   const {
     data: categories = [],
     isLoading: categoriesLoading,
-    isError: categoriesError,
-    error: categoriesErrorMessage,
   } = useQuery({
     queryKey: ["categories"],
     queryFn: fetchCategories,
@@ -40,19 +41,6 @@ const Category = () => {
     setSelectedCategoryId(category._id);
     setSelectedCategoryName(category.name);
   };
-
-  if (categoriesLoading)
-    return (
-      <div className="text-center mt-4">
-        <Spinner size="lg" />
-      </div>
-    );
-  if (categoriesError)
-    return (
-      <div className="text-center mt-4 text-red-500">
-        Error: {categoriesErrorMessage.message}
-      </div>
-    );
 
   return (
     <BackgroundLayout>
@@ -88,7 +76,9 @@ const Category = () => {
             )}
 
             <Card>
-              {categories.length === 0 ? (
+              {categoriesLoading ? (
+                <CategoryListSkeleton items={5} />
+              ) : categories.length === 0 ? (
                 <p className="text-gray-300 text-center py-4">
                   No categories found
                 </p>
@@ -121,16 +111,20 @@ const Category = () => {
                   {selectedCategoryName} Expenses
                 </h2>
                 <Card className="overflow-x-auto">
-                  <ExpenseTable
-                    expenses={expenses}
-                    isLoading={expensesLoading}
-                    isError={expensesError}
-                    error={expensesErrorMessage}
-                    categories={categories}
-                    showTotal={false}
-                    showCategory={false}
-                    showTotalBelow={true}
-                  />
+                  {!expensesLoading ? (
+                    <ExpenseTableSkeleton showCategory={false} />
+                  ) : (
+                    <ExpenseTable
+                      expenses={expenses}
+                      isLoading={expensesLoading}
+                      isError={expensesError}
+                      error={expensesErrorMessage}
+                      categories={categories}
+                      showTotal={false}
+                      showCategory={false}
+                      showTotalBelow={true}
+                    />
+                  )}
                 </Card>
               </>
             )}

@@ -4,6 +4,7 @@ import { createCategory } from "../api/category.js";
 import { showSuccessToast, showErrorToast } from "../utils/toast";
 import Button from "./Button";
 import Input from "./Input";
+import Spinner from "./Spinner";
 
 const CategoryForm = ({ categories = [], onClose }) => {
   const [newCategoryName, setNewCategoryName] = useState("");
@@ -61,7 +62,14 @@ const CategoryForm = ({ categories = [], onClose }) => {
           disabled={createMutation.isLoading}
           className="px-4 py-2 disabled:opacity-50"
         >
-          {createMutation.isLoading ? "Adding..." : "Add"}
+          {createMutation.isLoading ? (
+            <div className="flex items-center justify-center">
+              <Spinner size="sm" className="mr-2" />
+              Adding...
+            </div>
+          ) : (
+            "Add"
+          )}
         </Button>
         <Button
           type="button"

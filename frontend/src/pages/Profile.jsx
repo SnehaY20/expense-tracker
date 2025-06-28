@@ -12,6 +12,7 @@ import Card from "../components/Card";
 import Button from "../components/Button";
 import Input from "../components/Input";
 import Spinner from "../components/Spinner";
+import { ProfileCardSkeleton } from "../components/Skeleton";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -104,8 +105,25 @@ const Profile = () => {
   if (loading) {
     return (
       <BackgroundLayout>
-        <div className="min-h-screen flex items-center justify-center">
-          <Spinner size="xl" />
+        <div className="min-h-screen flex flex-col items-center justify-center py-8 relative">
+          <div className="absolute top-8 right-8 z-10">
+            {isLoggedIn ? (
+              <Button onClick={handleLogout} className="px-6 py-2">
+                Logout
+              </Button>
+            ) : (
+              <Button onClick={handleLogin} className="px-6 py-2">
+                Login
+              </Button>
+            )}
+          </div>
+          <div className="w-full max-w-lg mx-auto space-y-6 px-4">
+            <div className="text-center mb-6 mt-20">
+              <div className="h-8 bg-gray-500 rounded w-1/3 mx-auto animate-pulse mb-2"></div>
+              <div className="h-6 bg-gray-500 rounded w-1/2 mx-auto animate-pulse"></div>
+            </div>
+            <ProfileCardSkeleton />
+          </div>
         </div>
       </BackgroundLayout>
     );
@@ -113,7 +131,7 @@ const Profile = () => {
 
   return (
     <BackgroundLayout>
-      <div className="min-h-screen flex flex-col items-center justify-center py-8">
+      <div className="min-h-screen flex flex-col items-center justify-center py-8 relative">
         <div className="absolute top-8 right-8 z-10">
           {isLoggedIn ? (
             <Button onClick={handleLogout} className="px-6 py-2">
@@ -125,13 +143,7 @@ const Profile = () => {
             </Button>
           )}
         </div>
-        <div className="w-full max-w-lg mx-auto space-y-6">
-          <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-100 mb-2">
-              Hi, <span className="text-purple-300">{user?.name}</span>
-            </h1>
-          </div>
-
+        <div className="w-full max-w-lg mx-auto space-y-6 px-4">
           <Card>
             <div className="text-sm text-gray-300 font-semibold mb-1">
               Your Name
@@ -226,7 +238,14 @@ const Profile = () => {
                       disabled={updating}
                       className="flex-1 py-2 px-4 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      {updating ? "Updating..." : "Update Password"}
+                      {updating ? (
+                        <div className="flex items-center justify-center">
+                          <Spinner size="sm" className="mr-2" />
+                          Updating...
+                        </div>
+                      ) : (
+                        "Update Password"
+                      )}
                     </Button>
                     <Button
                       type="button"
