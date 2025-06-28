@@ -50,6 +50,7 @@ Provide a dashboard to visualize expense data — including total savings, expen
 - Tagging recurring expenses.
 - Exporting expense data (CSV/PDF).
 - Dark mode and theme preferences.
+- Notifications
 
 ---
 
