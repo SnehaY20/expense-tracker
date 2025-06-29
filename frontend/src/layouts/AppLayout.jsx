@@ -2,7 +2,7 @@ import React from "react";
 import BackgroundLayout from "../components/BackgroundLayout";
 import Navbar from "../components/Navbar";
 import { useAuth } from "../store/AuthStore";
-import { Sidebar, SidebarBody } from "../components/Sidebar";
+import { Sidebar, SidebarContent } from "../components/Sidebar";
 import { useLocation } from "react-router-dom";
 
 const AppLayout = ({ children }) => {
@@ -10,19 +10,24 @@ const AppLayout = ({ children }) => {
   const location = useLocation();
   const hideNav =
     location.pathname === "/login" || location.pathname === "/register";
+
   return (
     <BackgroundLayout>
-      {isLoggedIn && !hideNav && <Navbar />}
-      {isLoggedIn && !hideNav ? (
-        <div className="flex min-h-screen">
-          <Sidebar>
-            <SidebarBody />
-          </Sidebar>
-          <main className="flex-1">{children}</main>
-        </div>
-      ) : (
-        children
-      )}
+      <div className="flex flex-col h-screen">
+        <Navbar />
+        {isLoggedIn && !hideNav ? (
+          <div className="flex flex-1 min-h-0 mt-16">
+            <Sidebar>
+              <SidebarContent />
+            </Sidebar>
+            <main className="flex-1 transition-all duration-300 overflow-auto">
+              {children}
+            </main>
+          </div>
+        ) : (
+          children
+        )}
+      </div>
     </BackgroundLayout>
   );
 };
