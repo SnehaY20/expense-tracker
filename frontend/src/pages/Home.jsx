@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ArrowRight } from "lucide-react";
 import Navbar from "../components/Navbar";
+import Overview from "../components/Overview";
 import { useAuth } from "../store/AuthStore";
 import BackgroundLayout from "../components/BackgroundLayout";
 
@@ -17,11 +18,13 @@ export default function Home() {
       {isLoggedIn && <Navbar />}
       <section
         className={`relative z-10 px-6 py-20 ${
-          isLoggedIn ? "pt-32" : "flex items-center justify-center min-h-[80vh]"
+          isLoggedIn
+            ? "pt-32 overflow-y-auto h-screen"
+            : "flex items-center justify-center min-h-[80vh]"
         }`}
       >
         <div className="max-w-7xl mx-auto w-full">
-          {!isLoggedIn && (
+          {!isLoggedIn ? (
             <div
               className={`text-center space-y-8 transition-all duration-1000 ${
                 isVisible
@@ -60,6 +63,8 @@ export default function Home() {
                 </button>
               </div>
             </div>
+          ) : (
+            <Overview />
           )}
         </div>
       </section>
