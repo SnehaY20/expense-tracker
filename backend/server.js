@@ -6,6 +6,10 @@ const reqLogger = require("./middleware/reqLogger.js");
 const authRouter = require("./routes/auth.js");
 const categoriesRouter = require("./routes/category.js");
 const expensesRouter = require("./routes/expense.js");
+const insightsRouter = require("./routes/insights.js");
+const analyticsRouter = require("./routes/analytics.js");
+const budgetRouter = require("./routes/budget.js");
+const overviewRouter = require("./routes/overview.js");
 const errorHandler = require("./middleware/errorHandler.js");
 
 dotenv.config({ path: "./.env" });
@@ -20,6 +24,10 @@ app.use(reqLogger);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/category", categoriesRouter);
 app.use("/api/v1/expenses", expensesRouter);
+app.use("/api/v1/insights", insightsRouter);
+app.use("/api/v1/analytics", analyticsRouter);
+app.use("/api/v1/budget", budgetRouter);
+app.use("/api/v1/overview", overviewRouter);
 
 const PORT = process.env.PORT || 5000;
 

@@ -23,6 +23,16 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
+    monthlyBudget: {
+      type: Number,
+      default: 0,
+      min: [0, "Budget cannot be negative"],
+    },
+    budgetPeriod: {
+      type: String,
+      enum: ["monthly", "weekly", "yearly"],
+      default: "monthly",
+    },
   },
   {
     timestamps: true,

@@ -35,7 +35,7 @@ const MonthlyTrendChart = ({ data }) => (
           axisLine={{ stroke: "#fff" }}
           tickLine={{ stroke: "#fff" }}
         />
-        <Tooltip formatter={(value) => `$${value}`} />
+        <Tooltip formatter={(value) => `₹${value}`} />
         <Line
           type="monotone"
           dataKey="amount"
