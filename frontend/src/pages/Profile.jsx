@@ -19,7 +19,6 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Password change states
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -27,7 +26,7 @@ const Profile = () => {
 
   const [updating, setUpdating] = useState(false);
 
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -93,11 +92,6 @@ const Profile = () => {
     setError("");
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
-
   const handleLogin = () => {
     navigate("/login");
   };
@@ -107,17 +101,13 @@ const Profile = () => {
       <BackgroundLayout>
         <div className="min-h-screen flex flex-col items-center justify-center py-8 relative">
           <div className="absolute top-8 right-8 z-10">
-            {isLoggedIn ? (
-              <Button onClick={handleLogout} className="px-6 py-2">
-                Logout
-              </Button>
-            ) : (
+            {!isLoggedIn && (
               <Button onClick={handleLogin} className="px-6 py-2">
                 Login
               </Button>
             )}
           </div>
-          <div className="w-full max-w-lg mx-auto space-y-6 px-4">
+          <div className="w-full max-w-4xl mx-auto space-y-6 px-4">
             <div className="text-center mb-6 mt-20">
               <div className="h-8 bg-gray-500 rounded w-1/3 mx-auto animate-pulse mb-2"></div>
               <div className="h-6 bg-gray-500 rounded w-1/2 mx-auto animate-pulse"></div>
@@ -133,53 +123,74 @@ const Profile = () => {
     <BackgroundLayout>
       <div className="min-h-screen flex flex-col items-center justify-center py-8 relative">
         <div className="absolute top-8 right-8 z-10">
-          {isLoggedIn ? (
-            <Button onClick={handleLogout} className="px-6 py-2">
-              Logout
-            </Button>
-          ) : (
+          {!isLoggedIn && (
             <Button onClick={handleLogin} className="px-6 py-2">
               Login
             </Button>
           )}
         </div>
-        <div className="w-full max-w-lg mx-auto space-y-6 px-4">
-          <Card>
-            <div className="text-sm text-gray-300 font-semibold mb-1">
-              Your Name
-            </div>
-            <div className="text-lg font-bold text-white bg-transparent outline-none border-none p-0 m-0">
-              {user?.name || ""}
-            </div>
-          </Card>
 
-          <Card>
-            <div className="text-sm text-gray-300 font-semibold mb-1">
-              Email
+        <div className="w-full max-w-4xl mx-auto px-4">
+          <Card className="p-8">
+            <div className="mb-8">
+              <h1 className="text-2xl font-bold text-white">My Profile</h1>
             </div>
-            <div className="text-lg font-bold text-white bg-transparent outline-none border-none p-0 m-0">
-              {user?.email || ""}
-            </div>
-          </Card>
-
-          <Card className="flex items-center justify-between mb-2">
-            <div>
-              <div className="text-sm text-gray-300 font-semibold mb-1">
-                Password
+            <div className="flex gap-8">
+              <div className="flex-shrink-0">
+                <div className="w-32 h-32 bg-gray-700 rounded-full flex items-center justify-center">
+                  <svg
+                    className="w-16 h-16 text-gray-400"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                  </svg>
+                </div>
               </div>
-              <div className="text-lg font-bold text-white bg-transparent outline-none border-none p-0 m-0">
-                {"********"}
+
+              <div className="flex-1 space-y-6">
+                {/* Name Field */}
+                <div>
+                  <div className="text-sm text-gray-300 font-semibold mb-2">
+                    Your Name
+                  </div>
+                  <div className="text-lg font-bold text-white">
+                    {user?.name || ""}
+                  </div>
+                </div>
+
+                {/* Email Field */}
+                <div>
+                  <div className="text-sm text-gray-300 font-semibold mb-2">
+                    Email
+                  </div>
+                  <div className="text-lg font-bold text-white">
+                    {user?.email || ""}
+                  </div>
+                </div>
+
+                {/* Password Field */}
+                <div className="flex items-center">
+                  <div>
+                    <div className="text-sm text-gray-300 font-semibold mb-2">
+                      Password
+                    </div>
+                    <div className="text-lg font-bold text-white">
+                      {"***********************"}
+                    </div>
+                  </div>
+                  <Button
+                    className="ml-4 px-4 py-2"
+                    onClick={() => setShowPasswordModal(true)}
+                  >
+                    Edit
+                  </Button>
+                </div>
               </div>
             </div>
-            <Button
-              className="ml-4 px-4 py-2"
-              onClick={() => setShowPasswordModal(true)}
-            >
-              Edit
-            </Button>
           </Card>
 
-          {/* Password */}
+          {/* Password Modal*/}
           {showPasswordModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
               <Card className="relative w-full max-w-md mx-4 p-8 mb-4">

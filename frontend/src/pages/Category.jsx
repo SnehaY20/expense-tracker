@@ -17,10 +17,7 @@ const Category = () => {
   const [showAddForm, setShowAddForm] = useState(false);
 
   // Get all categories
-  const {
-    data: categories = [],
-    isLoading: categoriesLoading,
-  } = useQuery({
+  const { data: categories = [], isLoading: categoriesLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: fetchCategories,
   });
@@ -111,7 +108,7 @@ const Category = () => {
                   {selectedCategoryName} Expenses
                 </h2>
                 <Card className="overflow-x-auto">
-                  {!expensesLoading ? (
+                  {expensesLoading ? (
                     <ExpenseTableSkeleton showCategory={false} />
                   ) : (
                     <ExpenseTable

@@ -8,6 +8,7 @@ import { showSuccessToast, showErrorToast } from "../utils/toast";
 import AuthForm from "../components/AuthForm";
 import BackgroundLayout from "../components/BackgroundLayout";
 import Button from "../components/Button";
+import Spinner from "../components/Spinner";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -88,7 +89,14 @@ const Login = () => {
             disabled={mutation.isLoading || !email || !password}
             className="w-full px-8 py-3 rounded-xl shadow-lg transition transform hover:scale-105 disabled:opacity-50"
           >
-            {mutation.isLoading ? "Logging in..." : "Login"}
+            {mutation.isLoading ? (
+              <div className="flex items-center justify-center">
+                <Spinner size="sm" className="mr-2" />
+                Logging in...
+              </div>
+            ) : (
+              "Login"
+            )}
           </Button>
         }
       />
