@@ -5,9 +5,12 @@ import { showSuccessToast, showErrorToast } from "../utils/toast";
 import AuthForm from "../components/AuthForm";
 import BackgroundLayout from "../components/BackgroundLayout";
 import Button from "../components/Button";
+import Spinner from "../components/Spinner";
+import { useAuth } from "../store/AuthStore";
 
 const Register = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [form, setForm] = useState({
     name: "",
@@ -37,9 +40,13 @@ const Register = () => {
 
     setLoading(true);
     try {
-      await registerUser({ name, email, password });
-      showSuccessToast("Registration successful! Please login.");
-      navigate("/onboarding");
+      const data = await registerUser({ name, email, password });
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        login();
+      }
+      showSuccessToast("Registration successful! Welcome.");
+      navigate("/");
     } catch (err) {
       const errorMessage =
         err.message || "Something went wrong. Please try again.";
@@ -101,7 +108,14 @@ const Register = () => {
                 loading
               }
             >
-              {loading ? "Registering..." : "Register"}
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <Spinner size="sm" className="mr-2" />
+                  Registering...
+                </div>
+              ) : (
+                "Register"
+              )}
             </Button>
             <Button
               className="flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-200 text-white hover:bg-white/10 hover:scale-105"
