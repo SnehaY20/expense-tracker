@@ -17,13 +17,13 @@ export default function Home() {
     <BackgroundLayout>
       {isLoggedIn && <Navbar />}
       <section
-        className={`relative z-10 px-6 py-20 ${
+        className={`relative z-10 ${
           isLoggedIn
-            ? "pt-32 overflow-y-auto h-screen"
-            : "flex items-center justify-center min-h-[80vh]"
+            ? "px-6 pt-0 overflow-y-auto h-screen"
+            : "px-6 py-20 flex items-center justify-center min-h-[80vh]"
         }`}
       >
-        <div className="max-w-7xl mx-auto w-full">
+        <div className={`w-full ${isLoggedIn ? "max-w-full" : "max-w-7xl mx-auto"}`}>
           {!isLoggedIn ? (
             <div
               className={`text-center space-y-8 transition-all duration-1000 ${

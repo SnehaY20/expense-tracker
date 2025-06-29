@@ -36,7 +36,7 @@ const Overview = () => {
       { month: "Dec 23", amount: 2800.0 },
       { month: "Jan 24", amount: 2450.75 },
     ],
-    recentExpenses: [], 
+    recentExpenses: [],
   };
 
   return (
