@@ -28,13 +28,18 @@ const Category = () => {
     isLoading: expensesLoading,
     isError: expensesError,
     error: expensesErrorMessage,
+    refetch: refetchExpenses,
   } = useQuery({
     queryKey: ["expenses", selectedCategoryId],
     queryFn: () => fetchExpensesByCategory(selectedCategoryId),
     enabled: !!selectedCategoryId,
+    staleTime: 0, 
+    refetchOnMount: true,
+    refetchOnWindowFocus: false,
   });
 
   const handleCategoryClick = (category) => {
+    console.log("Category clicked:", category);
     setSelectedCategoryId(category._id);
     setSelectedCategoryName(category.name);
   };
@@ -104,9 +109,17 @@ const Category = () => {
           <div className="lg:col-span-2">
             {selectedCategoryName && (
               <>
-                <h2 className="text-2xl font-bold text-white mb-4">
-                  {selectedCategoryName} Expenses
-                </h2>
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-2xl font-bold text-white">
+                    {selectedCategoryName} Expenses
+                  </h2>
+                  <button
+                    onClick={() => refetchExpenses()}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded-lg text-sm transition-colors"
+                  >
+                    Refresh
+                  </button>
+                </div>
                 <Card className="overflow-x-auto">
                   {expensesLoading ? (
                     <ExpenseTableSkeleton showCategory={false} />
