@@ -138,14 +138,14 @@ const SidebarBody = ({ open }) => {
     </button>
   );
 
-  const ProfileLink = () => {
-    const isActive = location.pathname === "/profile";
+  const SettingsLink = () => {
+    const isActive = location.pathname === "/settings";
     return (
       <button
         className={`group/sidebar flex items-center transition-all duration-200 mt-8 text-gray-400 relative ${
           isActive ? "text-white" : ""
         }`}
-        onClick={() => navigate("/profile")}
+        onClick={() => navigate("/settings")}
       >
         <div className="relative flex items-center justify-center w-12 h-12 flex-shrink-0">
           <div
@@ -167,7 +167,7 @@ const SidebarBody = ({ open }) => {
             open ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
           } ${navLinkSpanClass}`}
         >
-          PROFILE
+          SETTINGS
         </span>
       </button>
     );
@@ -211,7 +211,7 @@ const SidebarBody = ({ open }) => {
             location.pathname === link.path;
           return <NavLink key={link.label} link={link} isActive={isActive} />;
         })}
-        <ProfileLink />
+        <SettingsLink />
       </div>
       <div className="flex flex-col items-start mb-2">
         <LogoutButton />
