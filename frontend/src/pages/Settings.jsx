@@ -18,12 +18,11 @@ const ProfileIcon = () => (
 );
 
 const Settings = () => {
-  const [selected, setSelected] = useState(null); 
+  const [selected, setSelected] = useState(null);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-transparent">
       <div className="w-80 bg-white/10 backdrop-blur-md p-6 flex flex-col gap-4 rounded-2xl h-[calc(100vh-4rem)] shadow-2xl">
-       
         <div className="text-xs text-gray-400 mb-2 font-bold tracking-widest">
           USER SETTINGS
         </div>
