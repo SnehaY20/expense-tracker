@@ -8,10 +8,11 @@ import Dashboard from "../pages/Dashboard";
 import Expenses from "../pages/Expenses";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
-import Profile from "../pages/Profile";
+
+import Settings from "../pages/Settings";
 
 import AppLayout from "../layouts/AppLayout";
-import BackgroundLayout from "../components/BackgroundLayout";
+
 import ProtectedRoute from "./ProtectedRoute";
 
 const AppRoutes = () => {
@@ -48,12 +49,10 @@ const AppRoutes = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route
-          path="/profile"
+          path="/settings"
           element={
             <ProtectedRoute>
-              <BackgroundLayout>
-                <Profile />
-              </BackgroundLayout>
+              <Settings />
             </ProtectedRoute>
           }
         />
