@@ -237,4 +237,55 @@ exports.getTopCategories = async (req, res) => {
   }
 };
 
+/**
+ * @desc      Get total expense amount for a specific category
+ * @route     GET /api/v1/category/total-expense/:id
+ * @access    Private
+ */
+
+exports.getTotalExpense = async (req, res) => {
+  try {
+    const categoryId = req.params.id;
+
+    const category = await Category.findById(categoryId).lean();
+    if (!category) {
+      return res.status(404).json({
+        success: false,
+        error: "Category not found",
+      });
+    }
+
+    const result = await Expense.aggregate([
+      {
+        $match: {
+          user: req.user._id,
+          category: category._id
+        }
+      },
+      {
+        $group: {
+          _id: "$category",
+          totalAmount: { $sum: "$amount" }
+        }
+      }
+    ]);
+
+    const totalAmount = result.length > 0 ? result[0].totalAmount : 0;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        _id: category._id,
+        categoryName: category.name,
+        totalAmount
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: "Server error",
+    });
+  }
+};
+
 
