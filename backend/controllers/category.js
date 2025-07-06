@@ -1,4 +1,5 @@
 const Category = require("../models/category.js");
+const Expense = require("../models/expense.js");
 const logger = require("../config/logger.js");
 const ERROR = require("../constants/errorMessages");
 
@@ -190,3 +191,50 @@ exports.deleteCategory = async (req, res) => {
     });
   }
 };
+
+/**
+ * @desc      Get top categories by expense amount
+ * @route     GET /api/v1/category/top-five
+ * @access    Private
+ */
+exports.getTopCategories = async (req, res) => {
+  try {
+    const topCategories = await Expense.aggregate([
+      { $match: { user: req.user._id } },
+      {
+        $group: {
+          _id: "$category",
+          totalAmount: { $sum: "$amount" }
+        }
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "_id",
+          foreignField: "_id",
+          as: "category"
+        }
+      },
+      { $unwind: "$category" },
+      {
+        $project: {
+          _id: 1,
+          name: "$category.name",
+          totalAmount: 1
+        }
+      },
+      { $sort: { totalAmount: -1 } }, 
+      { $limit: 5 } 
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: topCategories
+    });
+  } catch (error) {
+    console.error("[getTopCategories]", error.message);
+    res.status(500).json({ success: false, error: "Server Error" });
+  }
+};
+
+
