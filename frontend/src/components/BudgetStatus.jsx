@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Card from "./Card";
 import { CheckCircle, AlertTriangle, ThumbsUp } from "lucide-react";
+import Spinner from "./Spinner";
 
-const BudgetStatus = ({ spent = 500, limit = 2000 }) => {
+const BudgetStatus = ({ spent = 500, limit = 2000, loading = false }) => {
   const percent = (spent / limit) * 100;
   const [animatedPercent, setAnimatedPercent] = useState(0);
   let barColor = "bg-green-400";
@@ -57,6 +58,16 @@ const BudgetStatus = ({ spent = 500, limit = 2000 }) => {
     }, 200);
     return () => clearTimeout(timeout);
   }, [percent]);
+
+  if (loading) {
+    return (
+      <Card className="w-full h-full bg-white/10 backdrop-blur-md shadow-lg rounded-xl p-6 flex flex-col justify-between border border-white/20">
+        <div className="flex items-center justify-center h-32">
+          <Spinner />
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card className="w-full h-full bg-white/10 backdrop-blur-md shadow-lg rounded-xl p-6 flex flex-col justify-between border border-white/20">

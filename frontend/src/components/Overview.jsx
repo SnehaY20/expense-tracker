@@ -7,10 +7,13 @@ import MonthlyTrendChart from "./MonthlyTrendChart";
 import RecentExpenses from "./RecentExpenses";
 import BudgetStatus from "./BudgetStatus";
 import { fetchTopCategories } from "../api/category";
+import { fetchBudget } from "../api/budget";
 
 const Overview = () => {
   const [topCategories, setTopCategories] = useState([]);
+  const [budget, setBudget] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [budgetLoading, setBudgetLoading] = useState(true);
 
   useEffect(() => {
     const loadTopCategories = async () => {
@@ -26,7 +29,21 @@ const Overview = () => {
       }
     };
 
+    const loadBudget = async () => {
+      try {
+        setBudgetLoading(true);
+        const data = await fetchBudget();
+        setBudget(data);
+      } catch (error) {
+        console.error("Failed to load budget:", error);
+        setBudget(null);
+      } finally {
+        setBudgetLoading(false);
+      }
+    };
+
     loadTopCategories();
+    loadBudget();
   }, []);
 
   const mockData = {
@@ -92,7 +109,11 @@ const Overview = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
         <RecentExpenses />
         <div className="lg:col-span-1 w-full flex flex-col gap-4">
-          <BudgetStatus spent={1950} limit={2000} />
+          <BudgetStatus 
+            spent={budget?.spent || 0} 
+            limit={budget?.amount || 0} 
+            loading={budgetLoading}
+          />
           <TopCategories
             categories={topCategories}
             currencySymbol="₹"
