@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { DollarSign, Tag, TrendingUp, Clock } from "lucide-react";
 import SummaryCard from "./SummaryCard";
 import TopCategories from "./TopCategories";
@@ -6,20 +6,34 @@ import ExpensePieChart from "./ExpensePieChart";
 import MonthlyTrendChart from "./MonthlyTrendChart";
 import RecentExpenses from "./RecentExpenses";
 import BudgetStatus from "./BudgetStatus";
+import { fetchTopCategories } from "../api/category";
 
 const Overview = () => {
+  const [topCategories, setTopCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadTopCategories = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchTopCategories();
+        setTopCategories(data);
+      } catch (error) {
+        console.error("Failed to load top categories:", error);
+        setTopCategories([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadTopCategories();
+  }, []);
+
   const mockData = {
     totalThisMonth: 2450.75,
     categoriesCount: 8,
     highestCategory: { name: "Food & Dining", amount: 850.5 },
     recentExpensesCount: 12,
-    topCategories: [
-      { name: "Food & Dining", amount: 850.5 },
-      { name: "Transportation", amount: 420.25 },
-      { name: "Shopping", amount: 380.0 },
-      { name: "Entertainment", amount: 320.0 },
-      { name: "Utilities", amount: 280.0 },
-    ],
     pieChartData: [
       { name: "Food & Dining", value: 850.5 },
       { name: "Transportation", value: 420.25 },
@@ -80,8 +94,9 @@ const Overview = () => {
         <div className="lg:col-span-1 w-full flex flex-col gap-4">
           <BudgetStatus spent={1950} limit={2000} />
           <TopCategories
-            categories={mockData.topCategories}
+            categories={topCategories}
             currencySymbol="₹"
+            loading={loading}
           />
         </div>
       </div>
