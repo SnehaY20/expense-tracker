@@ -159,3 +159,37 @@ exports.deleteExpense = async (req, res) => {
     res.status(500).json({ success: false, error: ERROR.SERVER_ERROR });
   }
 };
+
+/**
+ * @desc      Get total amount of all expenses
+ * @route     GET /api/v1/expenses/total
+ * @access    Private
+ */
+exports.getTotalExpenses = async (req, res) => {
+  const TAG = "[getTotalExpenses]";
+  try {
+    const result = await Expense.aggregate([
+      { $match: { user: req.user._id } },
+      {
+        $group: {
+          _id: null,
+          totalAmount: { $sum: "$amount" }
+        }
+      }
+    ]);
+
+    const total = result[0]?.totalAmount || 0;
+
+    res.status(200).json({
+      success: true,
+      data: total.toLocaleString('en-IN', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      })
+    });
+  } catch (error) {
+    logger.error(`${TAG} ${error.message}`);
+    res.status(500).json({ success: false, error: ERROR.SERVER_ERROR });
+  }
+};
+
