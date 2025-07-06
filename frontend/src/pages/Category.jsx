@@ -4,6 +4,7 @@ import { fetchCategories } from "../api/category";
 import { fetchExpensesByCategory } from "../api/expense";
 import BackgroundLayout from "../components/BackgroundLayout";
 import CategoryForm from "../components/CategoryForm";
+import CategoryItem from "../components/CategoryItem";
 import ExpenseTable from "../components/ExpenseTable";
 import Card from "../components/Card";
 import {
@@ -39,10 +40,11 @@ const Category = () => {
   });
 
   const handleCategoryClick = (category) => {
-    console.log("Category clicked:", category);
     setSelectedCategoryId(category._id);
     setSelectedCategoryName(category.name);
   };
+
+  const totalAmount = expenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
 
   return (
     <BackgroundLayout>
@@ -87,18 +89,12 @@ const Category = () => {
               ) : (
                 <ul className="space-y-2">
                   {categories.map((category) => (
-                    <li key={category._id}>
-                      <button
-                        onClick={() => handleCategoryClick(category)}
-                        className={`w-full text-left p-3 rounded-lg transition-all duration-200 ${
-                          selectedCategoryId === category._id
-                            ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg"
-                            : "bg-white/5 text-gray-200 hover:bg-white/10 hover:text-white"
-                        }`}
-                      >
-                        <span className="font-medium">{category.name}</span>
-                      </button>
-                    </li>
+                    <CategoryItem 
+                      key={category._id} 
+                      category={category}
+                      isSelected={selectedCategoryId === category._id}
+                      onClick={() => handleCategoryClick(category)}
+                    />
                   ))}
                 </ul>
               )}
@@ -132,10 +128,15 @@ const Category = () => {
                       categories={categories}
                       showTotal={false}
                       showCategory={false}
-                      showTotalBelow={true}
+                      showTotalBelow={false}
                     />
                   )}
                 </Card>
+                <div className="flex justify-end mt-4">
+                  <span className="text-3xl font-bold text-green-400">
+                    Total: ₹{totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
               </>
             )}
           </div>
