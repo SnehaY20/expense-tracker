@@ -4,7 +4,7 @@ import { CheckCircle, AlertTriangle, ThumbsUp } from "lucide-react";
 import Spinner from "./Spinner";
 
 const BudgetStatus = ({ spent = 500, limit = 2000, loading = false }) => {
-  const percent = (spent / limit) * 100;
+  const percent = limit > 0 ? (spent / limit) * 100 : 0;
   const [animatedPercent, setAnimatedPercent] = useState(0);
   let barColor = "bg-green-400";
   let icon = (
@@ -14,7 +14,15 @@ const BudgetStatus = ({ spent = 500, limit = 2000, loading = false }) => {
     <span className="text-sm text-green-400 font-semibold">On track</span>
   );
 
-  if (percent >= 100) {
+  if (limit === 0) {
+    barColor = "bg-gray-400";
+    icon = (
+      <CheckCircle className="w-5 h-5 text-gray-400" title="No budget set" />
+    );
+    statusText = (
+      <span className="text-sm text-gray-400 font-semibold">No budget set</span>
+    );
+  } else if (percent >= 100) {
     barColor = "bg-red-500";
     icon = (
       <AlertTriangle

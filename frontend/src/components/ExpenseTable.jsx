@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Spinner from "./Spinner";
+import { fetchTotalExpenses } from "../api/expense";
 
 function formatDate(dateString) {
   return new Date(dateString).toLocaleDateString("en-IN", {
@@ -29,10 +30,31 @@ const ExpenseTable = ({
   isError = false,
   error = null,
   categories = [],
-  showTotal = false,
   showCategory = true,
   showTotalBelow = false,
 }) => {
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [totalLoading, setTotalLoading] = useState(false);
+
+  useEffect(() => {
+    const loadTotalExpenses = async () => {
+      if (showTotalBelow) {
+        try {
+          setTotalLoading(true);
+          const data = await fetchTotalExpenses();
+          setTotalAmount(data);
+        } catch (error) {
+          console.error("Failed to load total expenses:", error);
+          setTotalAmount(0);
+        } finally {
+          setTotalLoading(false);
+        }
+      }
+    };
+
+    loadTotalExpenses();
+  }, [showTotalBelow]);
+
   const getCategoryName = (id) => {
     const cat = categories.find((c) => c._id === id);
     return cat ? cat.name : "Unknown";
@@ -40,10 +62,6 @@ const ExpenseTable = ({
 
   const sortedExpenses = [...expenses].sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-  );
-  const totalAmount = expenses.reduce(
-    (total, expense) => total + expense.amount,
-    0
   );
 
   return (
@@ -151,11 +169,19 @@ const ExpenseTable = ({
         !isLoading &&
         !isError && (
           <div className="text-right text-2xl font-bold text-green-400 px-4 py-2 mt-2">
-            Total:{" "}
-            {totalAmount.toLocaleString("en-IN", {
-              style: "currency",
-              currency: "INR",
-            })}
+            {totalLoading ? (
+              <div className="flex items-center justify-end gap-2">
+                <Spinner size="sm" />
+              </div>
+            ) : (
+              <>
+                Total:{" "}
+                {totalAmount.toLocaleString("en-IN", {
+                  style: "currency",
+                  currency: "INR",
+                })}
+              </>
+            )}
           </div>
         )}
     </div>

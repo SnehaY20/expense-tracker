@@ -182,10 +182,68 @@ exports.getTotalExpenses = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: total.toLocaleString('en-IN', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      })
+      data: total
+    });
+  } catch (error) {
+    logger.error(`${TAG} ${error.message}`);
+    res.status(500).json({ success: false, error: ERROR.SERVER_ERROR });
+  }
+};
+
+/**
+ * @desc      Get daily expenses for current month
+ * @route     GET /api/v1/expenses/daily
+ * @access    Private
+ */
+exports.getDailyExpenses = async (req, res) => {
+  const TAG = "[getDailyExpenses]";
+  try {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+    const result = await Expense.aggregate([
+      {
+        $match: {
+          user: req.user._id,
+          createdAt: {
+            $gte: startOfMonth,
+            $lte: endOfMonth
+          }
+        }
+      },
+      {
+        $group: {
+          _id: {
+            $dateToString: {
+              format: "%Y-%m-%d",
+              date: "$createdAt"
+            }
+          },
+          amount: { $sum: "$amount" }
+        }
+      },
+      {
+        $sort: { "_id": 1 }
+      }
+    ]);
+
+    // Create array with all days of the month
+    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    const dailyData = [];
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+      const existingData = result.find(item => item._id === dateStr);
+      dailyData.push({
+        day: day,
+        amount: existingData ? existingData.amount : 0
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: dailyData
     });
   } catch (error) {
     logger.error(`${TAG} ${error.message}`);

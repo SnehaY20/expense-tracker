@@ -6,7 +6,9 @@ const SummaryCard = ({ title, value, subtitle, icon: Icon, iconColor }) => (
     <div className="flex items-center justify-between">
       <div>
         <p className="text-sm font-medium text-gray-300">{title}</p>
-        <p className="text-2xl font-bold text-gray-100">{value}</p>
+        <div className="text-2xl font-bold text-gray-100">
+          {typeof value === 'string' ? value : value}
+        </div>
         {subtitle && <p className="text-sm text-gray-400">{subtitle}</p>}
       </div>
       <Icon className={`h-8 w-8 ${iconColor}`} />
