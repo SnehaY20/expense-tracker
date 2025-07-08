@@ -12,31 +12,33 @@ const COLORS = [
 ];
 
 const ExpensePieChart = ({ data }) => (
-  <Card className="p-6">
-    <h3 className="text-lg font-semibold mb-4 text-gray-100">
+  <Card className="p-4 flex flex-col items-center">
+    <h3 className="text-base font-semibold text-gray-100 text-center w-full mb-2">
       Expenses by Category
     </h3>
-    <ResponsiveContainer width="100%" height={300}>
-      <PieChart>
-        <Pie
-          data={data}
-          cx="50%"
-          cy="50%"
-          labelLine={false}
-          label={({ name, percent }) =>
-            `${name} ${(percent * 100).toFixed(0)}%`
-          }
-          outerRadius={80}
-          fill="#8884d8"
-          dataKey="value"
-        >
-          {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-          ))}
-        </Pie>
-        <Tooltip formatter={(value) => `$${value}`} />
-      </PieChart>
-    </ResponsiveContainer>
+    <div className="flex justify-center w-full">
+      <ResponsiveContainer width="100%" height={135}>
+        <PieChart>
+          <Pie
+            data={data}
+            cx="50%"
+            cy="50%"
+            labelLine={false}
+            label={({ name, percent }) =>
+              `${name} ${(percent * 100).toFixed(0)}%`
+            }
+            outerRadius={40}
+            fill="#8884d8"
+            dataKey="value"
+          >
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip formatter={(value) => `$${value}`} />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
   </Card>
 );
 

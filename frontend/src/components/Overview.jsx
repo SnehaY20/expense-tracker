@@ -1,30 +1,24 @@
 import React, { useState, useEffect } from "react";
-import { DollarSign, Tag, TrendingUp, Clock } from "lucide-react";
+import { DollarSign, TrendingUp } from "lucide-react";
 import SummaryCard from "./SummaryCard";
 import TopCategories from "./TopCategories";
 import ExpensePieChart from "./ExpensePieChart";
 import MonthlyTrendChart from "./MonthlyTrendChart";
-import RecentExpenses from "./RecentExpenses";
 import BudgetStatus from "./BudgetStatus";
 import Spinner from "./Spinner";
 import { fetchTopCategories } from "../api/category";
 import { fetchBudget } from "../api/budget";
-import { fetchTotalExpenses, fetchRecentExpenses, fetchDailyExpenses } from "../api/expense";
+import { fetchTotalExpenses, fetchDailyExpenses } from "../api/expense";
 
 const Overview = () => {
   const [topCategories, setTopCategories] = useState([]);
   const [budget, setBudget] = useState(null);
   const [totalExpenses, setTotalExpenses] = useState(0);
-  const [categoriesCount, setCategoriesCount] = useState(0);
   const [highestCategory, setHighestCategory] = useState({ name: "None", amount: 0 });
-  const [recentExpenses, setRecentExpenses] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [dailyExpenses, setDailyExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [budgetLoading, setBudgetLoading] = useState(true);
   const [totalExpensesLoading, setTotalExpensesLoading] = useState(true);
-  const [categoriesLoading, setCategoriesLoading] = useState(true);
-  const [recentExpensesLoading, setRecentExpensesLoading] = useState(true);
   const [dailyExpensesLoading, setDailyExpensesLoading] = useState(true);
 
   useEffect(() => {
@@ -33,8 +27,6 @@ const Overview = () => {
         setLoading(true);
         const data = await fetchTopCategories();
         setTopCategories(data);
-        
-        // Get highest category from top categories
         if (data && data.length > 0) {
           setHighestCategory({
             name: data[0].name,
@@ -46,7 +38,6 @@ const Overview = () => {
         setTopCategories([]);
       } finally {
         setLoading(false);
-        setCategoriesLoading(false);
       }
     };
 
@@ -76,35 +67,6 @@ const Overview = () => {
       }
     };
 
-    const loadCategoriesCount = async () => {
-      try {
-        setCategoriesLoading(true);
-        const { fetchCategories } = await import("../api/category");
-        const categoriesData = await fetchCategories();
-        setCategories(categoriesData);
-        setCategoriesCount(categoriesData.length);
-      } catch (error) {
-        console.error("Failed to load categories count:", error);
-        setCategories([]);
-        setCategoriesCount(0);
-      } finally {
-        setCategoriesLoading(false);
-      }
-    };
-
-    const loadRecentExpenses = async () => {
-      try {
-        setRecentExpensesLoading(true);
-        const data = await fetchRecentExpenses(5); // Get 5 recent expenses
-        setRecentExpenses(data);
-      } catch (error) {
-        console.error("Failed to load recent expenses:", error);
-        setRecentExpenses([]);
-      } finally {
-        setRecentExpensesLoading(false);
-      }
-    };
-
     const loadDailyExpenses = async () => {
       try {
         setDailyExpensesLoading(true);
@@ -121,31 +83,23 @@ const Overview = () => {
     loadTopCategories();
     loadBudget();
     loadTotalExpenses();
-    loadCategoriesCount();
-    loadRecentExpenses();
     loadDailyExpenses();
   }, []);
 
-  // Convert top categories to pie chart format
   const pieChartData = topCategories.map(category => ({
     name: category.name,
     value: category.totalAmount || category.amount || 0
   }));
 
   return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="space-y-3">
+      <div className="grid grid-cols-4 gap-3">
         <SummaryCard
           title="Total Expenses (This Month)"
           value={totalExpensesLoading ? <Spinner /> : `₹${totalExpenses.toLocaleString()}`}
           icon={DollarSign}
           iconColor="text-blue-400"
-        />
-        <SummaryCard
-          title="Total Categories"
-          value={categoriesLoading ? <Spinner /> : categoriesCount}
-          icon={Tag}
-          iconColor="text-green-400"
+          className="h-24"
         />
         <SummaryCard
           title="Highest Spent Category"
@@ -153,45 +107,41 @@ const Overview = () => {
           subtitle={loading ? "" : `₹${highestCategory.amount.toLocaleString()}`}
           icon={TrendingUp}
           iconColor="text-orange-400"
+          className="h-24"
         />
-        <SummaryCard
-          title="Recent Expenses"
-          value={recentExpensesLoading ? <Spinner /> : recentExpenses.length}
-          icon={Clock}
-          iconColor="text-purple-400"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-        <div className="col-span-1">
-          <ExpensePieChart data={loading ? [] : pieChartData} />
-        </div>
-        <div className="col-span-3">
-          <MonthlyTrendChart 
-            data={dailyExpenses} 
-            budget={budget?.amount || 0}
-            loading={dailyExpensesLoading}
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
-        <RecentExpenses 
-          expenses={recentExpenses}
-          loading={recentExpensesLoading}
-          categories={categories}
-        />
-        <div className="lg:col-span-1 w-full flex flex-col gap-4">
+        <div className="col-span-2">
           <BudgetStatus 
             spent={totalExpenses} 
             limit={budget?.amount || 0} 
             loading={budgetLoading || totalExpensesLoading}
+            className="h-24"
           />
-          <TopCategories
-            categories={topCategories}
-            currencySymbol="₹"
-            loading={loading}
-          />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-4 gap-3">
+        <div className="col-span-2 space-y-3">
+          <div className="h-[200px]">
+            <ExpensePieChart data={loading ? [] : pieChartData} />
+          </div>
+          <div className="h-[159px]">
+            <TopCategories
+              categories={topCategories}
+              currencySymbol="₹"
+              loading={loading}
+              className="h-full"
+            />
+          </div>
+        </div>
+        <div className="col-span-2">
+          <div className="h-[370px]">
+            <MonthlyTrendChart 
+              data={dailyExpenses} 
+              budget={budget?.amount || 0}
+              loading={dailyExpensesLoading}
+              className="h-full"
+            />
+          </div>
         </div>
       </div>
     </div>

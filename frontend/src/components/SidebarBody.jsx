@@ -105,7 +105,6 @@ const SidebarBody = ({ open }) => {
     { label: "HOME", path: "/", icon: <HomeIcon /> },
     { label: "CATEGORY", path: "/category", icon: <CategoryIcon /> },
     { label: "EXPENSE", path: "/expense", icon: <ExpenseIcon /> },
-    { label: "DASHBOARD", path: "/dashboard", icon: <DashboardIcon /> },
   ];
 
   const NavLink = ({ link, isActive }) => (

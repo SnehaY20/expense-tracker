@@ -20,7 +20,7 @@ const AppLayout = ({ children }) => {
             <Sidebar>
               <SidebarContent />
             </Sidebar>
-            <main className="flex-1 transition-all duration-300 overflow-auto">
+            <main className="flex-1 transition-all duration-300">
               {children}
             </main>
           </div>
