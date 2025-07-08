@@ -1,8 +1,8 @@
 import React from "react";
 
-const CategoryItem = ({ category, isSelected, onClick }) => {
+const CategoryItem = ({ category, isSelected, onClick, horizontal }) => {
   return (
-    <li>
+    <li className={horizontal ? "inline-block min-w-[120px]" : undefined}>
       <button
         onClick={onClick}
         className={`w-full text-left p-3 rounded-lg transition-all duration-200 ${
