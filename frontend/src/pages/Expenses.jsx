@@ -36,17 +36,8 @@ const Expenses = () => {
 
   return (
     <BackgroundLayout>
-      <div className="pt-28 mb-8 w-full px-2 sm:px-6">
-        <div className="bg-white/5 rounded-2xl p-6 text-white shadow-lg border border-gray-700/30 w-full overflow-x-auto">
-          <div className="flex justify-end mb-6">
-            <Button
-              onClick={() => setShowModal(true)}
-              className="px-8 py-3 shadow transition border border-gray-400/30"
-            >
-              Add Expense
-            </Button>
-          </div>
-
+      <div className="w-full px-2 sm:px-6">
+        <div className="max-w-7xl mx-auto">
           <ExpenseModal
             isOpen={showModal}
             onClose={() => setShowModal(false)}
@@ -56,24 +47,24 @@ const Expenses = () => {
             categoriesError={categoriesError}
             onSuccess={refetchExpenses}
           />
-
-          <div className="text-center text-white text-xl font-semibold mb-4 mt-2 tracking-wide">
-            Recent Expenses
+          <div className="text-white w-full">
+            {isExpensesLoading ? (
+              <ExpenseTableSkeleton showCategory={true} />
+            ) : (
+              <ExpenseTable
+                expenses={expenses}
+                isLoading={isExpensesLoading}
+                isError={isExpensesError}
+                error={expensesError}
+                categories={categories}
+                showTotal={false}
+                showTotalBelow={true}
+                showAddExpenseButton={true}
+                onAddExpense={() => setShowModal(true)}
+                maxVisibleRows={5}
+              />
+            )}
           </div>
-
-          {isExpensesLoading ? (
-            <ExpenseTableSkeleton showCategory={true} />
-          ) : (
-            <ExpenseTable
-              expenses={expenses}
-              isLoading={isExpensesLoading}
-              isError={isExpensesError}
-              error={expensesError}
-              categories={categories}
-              showTotal={false}
-              showTotalBelow={true}
-            />
-          )}
         </div>
       </div>
     </BackgroundLayout>
