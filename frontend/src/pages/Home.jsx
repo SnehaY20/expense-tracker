@@ -19,7 +19,7 @@ export default function Home() {
       <section
         className={`relative z-10 ${
           isLoggedIn
-            ? "px-6 pt-0 overflow-y-auto h-screen"
+            ? "px-6 pt-0 h-screen"
             : "px-6 py-20 flex items-center justify-center min-h-[80vh]"
         }`}
       >

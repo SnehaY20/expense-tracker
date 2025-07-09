@@ -1,94 +1,14 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../store/AuthStore";
+import { Home, ClipboardList, User, Settings, Power, Receipt } from "lucide-react";
 
-// Icon components
-const HomeIcon = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-  >
-    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-    <polyline points="9,22 9,12 15,12 15,22"></polyline>
-  </svg>
-);
-
-const CategoryIcon = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-  >
-    <circle cx="12" cy="12" r="3"></circle>
-    <path d="M12 1v6m0 6v6m11-7h-6m-6 0H1"></path>
-  </svg>
-);
-
-const ExpenseIcon = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-  >
-    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-    <circle cx="12" cy="7" r="4"></circle>
-  </svg>
-);
-
-const DashboardIcon = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-  >
-    <line x1="3" y1="6" x2="21" y2="6"></line>
-    <line x1="3" y1="12" x2="21" y2="12"></line>
-    <line x1="3" y1="18" x2="21" y2="18"></line>
-  </svg>
-);
-
-const SettingsIcon = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="12" cy="12" r="3" />
-    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 8 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 5 15.4a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 8a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 8 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09A1.65 1.65 0 0 0 16 4.6a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 8c.14.31.21.65.21 1v.09A1.65 1.65 0 0 0 21 12c0 .35-.07.69-.21 1z" />
-  </svg>
-);
-
-const PowerIcon = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-  >
-    <path d="M12 2v10" />
-    <path d="M6.2 17.8A7 7 0 1 0 17.8 6.2" />
-  </svg>
-);
+// Icon components from lucide-react
+const HomeIcon = () => <Home size={20} />;
+const CategoryIcon = () => <ClipboardList size={20} />;
+const ExpenseIcon = () => <Receipt size={20} />;
+const SettingsIcon = () => <Settings size={20} />;
+const PowerIcon = () => <Power size={20} />;
 
 const SidebarBody = ({ open }) => {
   const navigate = useNavigate();
@@ -105,7 +25,6 @@ const SidebarBody = ({ open }) => {
     { label: "HOME", path: "/", icon: <HomeIcon /> },
     { label: "CATEGORY", path: "/category", icon: <CategoryIcon /> },
     { label: "EXPENSE", path: "/expense", icon: <ExpenseIcon /> },
-    { label: "DASHBOARD", path: "/dashboard", icon: <DashboardIcon /> },
   ];
 
   const NavLink = ({ link, isActive }) => (
@@ -144,7 +63,7 @@ const SidebarBody = ({ open }) => {
     const isActive = location.pathname === "/settings";
     return (
       <button
-        className={`group/sidebar flex items-center transition-all duration-200 mt-8 text-gray-400 relative ${
+        className={`group/sidebar flex items-center transition-all duration-200 text-gray-400 relative ${
           isActive ? "text-white" : ""
         }`}
         onClick={() => navigate("/settings")}

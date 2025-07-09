@@ -92,7 +92,7 @@ export const DesktopSidebar = ({ className, children, ...props }) => {
   return (
     <div
       className={cn(
-        "relative h-full px-2 py-4 hidden md:flex md:flex-col transition-all duration-300 z-50",
+        "relative h-full px-2 py-4 hidden md:flex md:flex-col transition-all duration-300",
         open ? "w-[190px]" : "w-[80px]",
         className
       )}
@@ -111,7 +111,7 @@ export const MobileSidebar = ({ className, children, ...props }) => {
     <>
       <div
         className={cn(
-          "h-16 px-4 py-4 flex flex-row md:hidden items-center justify-between w-full",
+          "h-16 px-4 py-4 flex flex-row md:hidden items-center justify-between w-full z-[1000]",
           className
         )}
         {...props}
@@ -127,7 +127,7 @@ export const MobileSidebar = ({ className, children, ...props }) => {
         {open && (
           <div
             className={cn(
-              "fixed h-full w-full inset-0 p-10 z-[100] flex flex-col justify-between transition-all duration-300",
+              "fixed h-full w-full inset-0 p-10 z-[1000] flex flex-col justify-between transition-all duration-300",
               className
             )}
           >

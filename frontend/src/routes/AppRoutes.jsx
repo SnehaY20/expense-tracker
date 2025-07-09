@@ -4,7 +4,6 @@ import useAuthInterceptor from "../hooks/useAuthInterceptor";
 
 import Home from "../pages/Home";
 import Category from "../pages/Category";
-import Dashboard from "../pages/Dashboard";
 import Expenses from "../pages/Expenses";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
@@ -30,14 +29,7 @@ const AppRoutes = () => {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
+       
         <Route
           path="/expense"
           element={

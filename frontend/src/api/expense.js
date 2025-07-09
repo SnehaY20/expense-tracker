@@ -104,3 +104,63 @@ export const deleteExpense = async (id) => {
     throw error;
   }
 };
+
+// Get total amount of all expenses
+export const fetchTotalExpenses = async () => {
+  try {
+    const response = await fetch("/api/v1/expenses/total", {
+      method: "GET",
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to fetch total expenses");
+    }
+    const result = await response.json();
+    return result.data;
+  } catch (error) {
+    showErrorToast(error.message);
+    throw error;
+  }
+};
+
+// Get recent expenses (limit to 5)
+export const fetchRecentExpenses = async (limit = 5) => {
+  try {
+    const response = await fetch(`/api/v1/expenses?limit=${limit}`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to fetch recent expenses");
+    }
+    const result = await response.json();
+    return result.data;
+  } catch (error) {
+    showErrorToast(error.message);
+    throw error;
+  }
+};
+
+// Get daily expenses for current month
+export const fetchDailyExpenses = async () => {
+  try {
+    const response = await fetch("/api/v1/expenses/daily", {
+      method: "GET",
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to fetch daily expenses");
+    }
+    const result = await response.json();
+    return result.data;
+  } catch (error) {
+    showErrorToast(error.message);
+    throw error;
+  }
+};

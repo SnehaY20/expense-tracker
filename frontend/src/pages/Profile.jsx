@@ -248,7 +248,7 @@ const Profile = () => {
               </div>
               {budgetLoading && (
                 <div className="text-xs text-gray-400 mt-2">
-                  Loading budget...
+                  <Spinner size="sm" />
                 </div>
               )}
               {budgetError && (
@@ -320,8 +320,7 @@ const Profile = () => {
                 >
                   {updating ? (
                     <div className="flex items-center justify-center">
-                      <Spinner size="sm" className="mr-2" />
-                      Updating...
+                      <Spinner size="sm" />
                     </div>
                   ) : (
                     "Update Password"

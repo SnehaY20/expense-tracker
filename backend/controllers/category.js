@@ -1,4 +1,5 @@
 const Category = require("../models/category.js");
+const Expense = require("../models/expense.js");
 const logger = require("../config/logger.js");
 const ERROR = require("../constants/errorMessages");
 
@@ -190,3 +191,104 @@ exports.deleteCategory = async (req, res) => {
     });
   }
 };
+
+/**
+ * @desc      Get top categories by expense amount
+ * @route     GET /api/v1/category/top-five
+ * @access    Private
+ */
+exports.getTopCategories = async (req, res) => {
+  const TAG = '[getTopCategories]';
+  try {
+    const topCategories = await Expense.aggregate([
+      { $match: { user: req.user._id } },
+      {
+        $group: {
+          _id: "$category",
+          totalAmount: { $sum: "$amount" }
+        }
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "_id",
+          foreignField: "_id",
+          as: "category"
+        }
+      },
+      { $unwind: "$category" },
+      {
+        $project: {
+          _id: 1,
+          name: "$category.name",
+          totalAmount: 1
+        }
+      },
+      { $sort: { totalAmount: -1 } }, 
+      { $limit: 5 } 
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: topCategories
+    });
+  } catch (error) {
+    console.error(`${TAG} ${error.message}`);
+    res.status(500).json({ success: false, error: "Server Error" });
+  }
+};
+
+/**
+ * @desc      Get total expense amount for a specific category
+ * @route     GET /api/v1/category/:id/total-expense
+ * @access    Private
+ */
+
+exports.getTotalExpense = async (req, res) => {
+  const TAG = '[getTotalExpense]';
+  try {
+    const categoryId = req.params.id;
+
+    const category = await Category.findById(categoryId).lean();
+    if (!category) {
+      return res.status(404).json({
+        success: false,
+        error: "Category not found",
+      });
+    }
+
+    const result = await Expense.aggregate([
+      {
+        $match: {
+          user: req.user._id,
+          category: category._id
+        }
+      },
+      {
+        $group: {
+          _id: "$category",
+          totalAmount: { $sum: "$amount" }
+        }
+      }
+    ]);
+
+    const totalAmount = result.length > 0 ? result[0].totalAmount : 0;
+
+    res.status(200).json({
+      success: true,
+      data: {
+        _id: category._id,
+        categoryName: category.name,
+        totalAmount
+      }
+    });
+  } catch (error) {
+    logger.error(`${TAG} Error while getting total expense: ${error.message}`);
+    res.status(500).json({
+      success: false,
+      error: "Server error",
+    });
+  }
+};
+
+

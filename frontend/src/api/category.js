@@ -107,3 +107,45 @@ export const deleteCategory = async (id) => {
     throw error;
   }
 };
+
+// Get top categories by expense amount
+export const fetchTopCategories = async () => {
+  try {
+    const response = await fetch("/api/v1/category/top-five", {
+      method: "GET",
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to fetch top categories");
+    }
+
+    const result = await response.json();
+    return result.data;
+  } catch (error) {
+    showErrorToast(error.message);
+    throw error;
+  }
+};
+
+// Get total expense amount for a specific category
+export const fetchTotalExpenseByCategory = async (categoryId) => {
+  try {
+    const response = await fetch(`/api/v1/category/total-expense/${categoryId}`, {
+      method: "GET",
+      headers: getAuthHeaders(),
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to fetch total expense for category");
+    }
+
+    const result = await response.json();
+    return result.data;
+  } catch (error) {
+    showErrorToast(error.message);
+    throw error;
+  }
+};

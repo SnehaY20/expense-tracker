@@ -5,11 +5,15 @@ const {
   createCategory,
   updateCategory,
   deleteCategory,
-  getCategory
+  getCategory,
+  getTopCategories,
+  getTotalExpense
 } = require("../controllers/category.js");
 const auth = require("../middleware/auth");
 
 router.get("/", auth, getCategories);
+router.get(":id/total-expense", auth, getTotalExpense);
+router.get("/top-five", auth, getTopCategories);
 router.get("/:id", auth, getCategory);
 router.post("/", auth, createCategory);
 router.put("/:id", auth, updateCategory);
