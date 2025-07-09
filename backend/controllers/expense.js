@@ -185,13 +185,13 @@ exports.getTotalExpenses = async (req, res) => {
       data: total
     });
   } catch (error) {
-    logger.error(`${TAG} ${error.message}`);
+    logger.error(`${TAG} Error while getting total expense: ${error.message}`);
     res.status(500).json({ success: false, error: ERROR.SERVER_ERROR });
   }
 };
 
 /**
- * @desc      Get daily expenses for current month
+ * @desc      Get daily expenses for current month9-
  * @route     GET /api/v1/expenses/daily
  * @access    Private
  */

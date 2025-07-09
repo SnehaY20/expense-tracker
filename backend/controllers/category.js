@@ -198,6 +198,7 @@ exports.deleteCategory = async (req, res) => {
  * @access    Private
  */
 exports.getTopCategories = async (req, res) => {
+  const TAG = '[getTopCategories]';
   try {
     const topCategories = await Expense.aggregate([
       { $match: { user: req.user._id } },
@@ -232,18 +233,19 @@ exports.getTopCategories = async (req, res) => {
       data: topCategories
     });
   } catch (error) {
-    console.error("[getTopCategories]", error.message);
+    console.error(`${TAG} ${error.message}`);
     res.status(500).json({ success: false, error: "Server Error" });
   }
 };
 
 /**
  * @desc      Get total expense amount for a specific category
- * @route     GET /api/v1/category/total-expense/:id
+ * @route     GET /api/v1/category/:id/total-expense
  * @access    Private
  */
 
 exports.getTotalExpense = async (req, res) => {
+  const TAG = '[getTotalExpense]';
   try {
     const categoryId = req.params.id;
 
@@ -281,6 +283,7 @@ exports.getTotalExpense = async (req, res) => {
       }
     });
   } catch (error) {
+    logger.error(`${TAG} Error while getting total expense: ${error.message}`);
     res.status(500).json({
       success: false,
       error: "Server error",

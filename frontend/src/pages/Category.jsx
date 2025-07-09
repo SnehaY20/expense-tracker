@@ -7,20 +7,14 @@ import CategoryForm from "../components/CategoryForm";
 import CategoryItem from "../components/CategoryItem";
 import ExpenseTable from "../components/ExpenseTable";
 import Card from "../components/Card";
-import {
-  CategoryListSkeleton,
-  ExpenseTableSkeleton,
-} from "../components/Skeleton";
+import { CategoryListSkeleton } from "../components/Skeleton";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const Category = () => {
-  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
-  const [selectedCategoryName, setSelectedCategoryName] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [showLeftChevron, setShowLeftChevron] = useState(false);
-  const [showRightChevron, setShowRightChevron] = useState(false);
+  const [showScrollButtons, setShowScrollButtons] = useState({ left: false, right: false });
   const categoryListRef = useRef(null);
-  const [categoryTotal, setCategoryTotal] = useState(0);
 
   // Get all categories
   const { data: categories = [], isLoading: categoriesLoading } = useQuery({
@@ -34,22 +28,19 @@ const Category = () => {
     isLoading: expensesLoading,
     isError: expensesError,
     error: expensesErrorMessage,
-    refetch: refetchExpenses,
   } = useQuery({
-    queryKey: ["expenses", selectedCategoryId],
-    queryFn: () => fetchExpensesByCategory(selectedCategoryId),
-    enabled: !!selectedCategoryId,
-    staleTime: 0, 
-    refetchOnMount: true,
-    refetchOnWindowFocus: false,
+    queryKey: ["expenses", selectedCategory?._id],
+    queryFn: () => fetchExpensesByCategory(selectedCategory._id),
+    enabled: !!selectedCategory?._id,
   });
 
   // Fetch total expense for selected category
+  const [categoryTotal, setCategoryTotal] = useState(0);
   useEffect(() => {
     const getTotal = async () => {
-      if (selectedCategoryId) {
+      if (selectedCategory?._id) {
         try {
-          const total = await fetchTotalExpenseByCategory(selectedCategoryId);
+          const total = await fetchTotalExpenseByCategory(selectedCategory._id);
           setCategoryTotal(total || 0);
         } catch {
           setCategoryTotal(0);
@@ -59,33 +50,35 @@ const Category = () => {
       }
     };
     getTotal();
-  }, [selectedCategoryId]);
+  }, [selectedCategory?._id]);
 
   const handleCategoryClick = (category) => {
-    setSelectedCategoryId(category._id);
-    setSelectedCategoryName(category.name);
+    setSelectedCategory(category);
   };
 
   const scrollCategoryList = (direction) => {
     const container = categoryListRef.current;
     if (!container) return;
+    
     const scrollAmount = 200;
-    if (direction === "left") {
-      container.scrollBy({ left: -scrollAmount, behavior: "smooth" });
-    } else {
-      container.scrollBy({ left: scrollAmount, behavior: "smooth" });
-    }
+    container.scrollBy({ 
+      left: direction === "left" ? -scrollAmount : scrollAmount, 
+      behavior: "smooth" 
+    });
   };
 
   const checkScrollPosition = () => {
     const container = categoryListRef.current;
     if (!container) return;
+    
     const { scrollLeft, scrollWidth, clientWidth } = container;
-    setShowLeftChevron(scrollLeft > 0);
-    setShowRightChevron(scrollLeft < scrollWidth - clientWidth - 5);
+    setShowScrollButtons({
+      left: scrollLeft > 0,
+      right: scrollLeft < scrollWidth - clientWidth - 5
+    });
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (categories.length > 0) {
       setTimeout(checkScrollPosition, 100);
     }
@@ -93,9 +86,10 @@ const Category = () => {
 
   return (
     <BackgroundLayout>
+      {/* Category Navigation */}
       <div className="fixed top-16 left-14 right-0 z-40 backdrop-blur-sm">
         <div className="flex items-center h-16 gap-2 px-8">
-          {showLeftChevron && (
+          {showScrollButtons.left && (
             <button 
               onClick={() => scrollCategoryList("left")}
               className="text-white hover:text-pink-400 transition-colors"
@@ -103,6 +97,7 @@ const Category = () => {
               <ChevronLeft size={28} />
             </button>
           )}
+          
           <div className="flex-1 overflow-hidden">
             <ul 
               ref={categoryListRef} 
@@ -119,7 +114,7 @@ const Category = () => {
                   <CategoryItem 
                     key={category._id} 
                     category={category}
-                    isSelected={selectedCategoryId === category._id}
+                    isSelected={selectedCategory?._id === category._id}
                     onClick={() => handleCategoryClick(category)}
                     horizontal
                   />
@@ -127,8 +122,8 @@ const Category = () => {
               )}
             </ul>
           </div>
-          {/* Right Chevron */}
-          {showRightChevron && (
+          
+          {showScrollButtons.right && (
             <button 
               onClick={() => scrollCategoryList("right")}
               className="text-white hover:text-pink-400 transition-colors"
@@ -138,10 +133,12 @@ const Category = () => {
           )}
         </div>
       </div>
+
+      {/* Main Content */}
       <div className="pt-32 mb-8 max-w-7xl mx-auto p-4">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="lg:col-span-2">
-            {selectedCategoryId && (
+            {selectedCategory && (
               <ExpenseTable
                 expenses={expenses}
                 isLoading={expensesLoading}
@@ -160,6 +157,8 @@ const Category = () => {
             )}
           </div>
         </div>
+
+        {/* Add Category Modal */}
         {showAddForm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
             <Card className="relative w-full max-w-md mx-4 p-8 mb-4">
