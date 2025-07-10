@@ -59,22 +59,17 @@ const CategoryForm = ({ categories = [], onClose }) => {
       <div className="flex gap-2">
         <Button
           type="submit"
-          disabled={createMutation.isLoading}
-          className="px-4 py-2 disabled:opacity-50"
+          disabled={createMutation.isPending}
+          className="px-4 py-2 disabled:opacity-50 flex items-center justify-center"
         >
-          {createMutation.isLoading ? (
-            <div className="flex items-center justify-center">
-              <Spinner size="sm" className="mr-2" />
-              Adding...
-            </div>
-          ) : (
-            "Add"
-          )}
+          {createMutation.isPending && <Spinner size="sm" className="mr-2" />}
+          {createMutation.isPending ? "Adding..." : "Add"}
         </Button>
         <Button
           type="button"
           onClick={handleCancel}
-          className="bg-gray-600 hover:bg-gray-700 px-4 py-2"
+          variant="gray"
+          className="px-4 py-2"
         >
           Cancel
         </Button>

@@ -132,7 +132,7 @@ export const fetchTopCategories = async () => {
 // Get total expense amount for a specific category
 export const fetchTotalExpenseByCategory = async (categoryId) => {
   try {
-    const response = await fetch(`/api/v1/category/total-expense/${categoryId}`, {
+    const response = await fetch(`/api/v1/category/${categoryId}/total-expense`, {
       method: "GET",
       headers: getAuthHeaders(),
     });

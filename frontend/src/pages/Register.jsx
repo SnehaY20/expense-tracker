@@ -99,7 +99,7 @@ const Register = () => {
           <>
             <Button
               type="submit"
-              className="w-full px-8 py-3 rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105 hover:shadow-purple-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full px-8 py-3 rounded-xl shadow-lg transition-all duration-200 transform hover:scale-105 hover:shadow-purple-500/25 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               disabled={
                 !form.name ||
                 !form.email ||
@@ -108,14 +108,8 @@ const Register = () => {
                 loading
               }
             >
-              {loading ? (
-                <div className="flex items-center justify-center">
-                  <Spinner size="sm" className="mr-2" />
-                  Registering...
-                </div>
-              ) : (
-                "Register"
-              )}
+              {loading && <Spinner size="sm" className="mr-2" />}
+              {loading ? "Registering..." : "Register"}
             </Button>
             <Button
               className="flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-200 text-white hover:bg-white/10 hover:scale-105"
