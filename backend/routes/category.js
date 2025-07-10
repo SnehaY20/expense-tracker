@@ -12,7 +12,7 @@ const {
 const auth = require("../middleware/auth");
 
 router.get("/", auth, getCategories);
-router.get(":id/total-expense", auth, getTotalExpense);
+router.get("/:id/total-expense", auth, getTotalExpense);
 router.get("/top-five", auth, getTopCategories);
 router.get("/:id", auth, getCategory);
 router.post("/", auth, createCategory);

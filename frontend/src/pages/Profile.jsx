@@ -144,8 +144,8 @@ const Profile = () => {
 
   if (loading) {
     return (
-      <div className="w-full max-w-4xl mx-auto space-y-6 px-4">
-        <div className="text-center mb-6 mt-20">
+      <div className="flex flex-col h-screen">
+        <div className="text-center">
           <div className="h-8 bg-gray-500 rounded w-1/3 mx-auto animate-pulse mb-2"></div>
           <div className="h-6 bg-gray-500 rounded w-1/2 mx-auto animate-pulse"></div>
         </div>
@@ -155,121 +155,117 @@ const Profile = () => {
   }
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4">
-      <Card className="p-8">
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white">My Profile</h1>
-        </div>
-        <div className="flex gap-8">
-          <div className="flex-shrink-0">
-            <div className="w-32 h-32 bg-gray-700 rounded-full flex items-center justify-center">
-              <svg
-                className="w-16 h-16 text-gray-400"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-              </svg>
-            </div>
+    <div className="flex flex-col h-screen w-full px-2 sm:px-6">
+      <div className="max-w-7xl w-full mx-auto">
+        <Card className="p-8">
+          <div className="mb-8">
+            <h1 className="text-2xl font-bold text-white">My Profile</h1>
           </div>
-
-          <div className="flex-1 space-y-6">
-            {/* Name Field */}
-            <div>
-              <div className="text-sm text-gray-300 font-semibold mb-2">
-                Your Name
-              </div>
-              <div className="text-lg font-bold text-white">
-                {user?.name || ""}
-              </div>
-            </div>
-
-            {/* Email Field */}
-            <div>
-              <div className="text-sm text-gray-300 font-semibold mb-2">
-                Email
-              </div>
-              <div className="text-lg font-bold text-white">
-                {user?.email || ""}
+          <div className="flex gap-8">
+            <div className="flex-shrink-0">
+              <div className="w-32 h-32 bg-gray-700 rounded-full flex items-center justify-center">
+                <svg
+                  className="w-16 h-16 text-gray-400"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                </svg>
               </div>
             </div>
 
-            {/* Password Field */}
-            <div className="flex items-center">
+            <div className="flex-1 space-y-6">
+              {/* Name Field */}
               <div>
                 <div className="text-sm text-gray-300 font-semibold mb-2">
-                  Password
+                  Your Name
                 </div>
                 <div className="text-lg font-bold text-white">
-                  {"***********************"}
+                  {user?.name || ""}
                 </div>
               </div>
-              <Button
-                className="ml-4 px-4 py-2"
-                onClick={() => setShowPasswordModal(true)}
-              >
-                Edit
-              </Button>
-            </div>
 
-            {/* Budget Field */}
-            <div className="mt-8">
-              <div className="text-sm text-gray-300 font-semibold mb-2">
-                Budget
+              {/* Email Field */}
+              <div>
+                <div className="text-sm text-gray-300 font-semibold mb-2">
+                  Email
+                </div>
+                <div className="text-lg font-bold text-white">
+                  {user?.email || ""}
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  className="px-3 py-2 rounded-lg bg-white/10 text-white placeholder-gray-400 focus:outline-none border border-white/20 w-40"
-                  placeholder="Enter budget"
-                  value={budgetInput}
-                  onChange={(e) => setBudgetInput(e.target.value)}
-                  disabled={budgetLoading || budgetUpdating}
-                />
-                {budget ? (
-                  <Button
-                    className="px-4 py-2"
-                    onClick={handleUpdateBudget}
-                    disabled={budgetUpdating || budgetLoading}
-                  >
-                    {budgetUpdating ? "Updating..." : "Update Budget"}
-                  </Button>
-                ) : (
-                  <Button
-                    className="px-4 py-2"
-                    onClick={handleAddBudget}
-                    disabled={budgetUpdating || budgetLoading || !budgetInput}
-                  >
-                    {budgetUpdating ? "Adding..." : "Add Budget"}
-                  </Button>
+
+              {/* Password Field */}
+              <div className="flex items-center">
+                <div>
+                  <div className="text-sm text-gray-300 font-semibold mb-2">
+                    Password
+                  </div>
+                  <div className="text-lg font-bold text-white">
+                    {"***********************"}
+                  </div>
+                </div>
+                <Button
+                  className="ml-4 px-4 py-2"
+                  onClick={() => setShowPasswordModal(true)}
+                >
+                  Edit
+                </Button>
+              </div>
+
+              {/* Budget Field */}
+              <div className="mt-8">
+                <div className="text-sm text-gray-300 font-semibold mb-2">
+                  Budget
+                </div>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    className="px-3 py-2 rounded-lg bg-white/10 text-white placeholder-gray-400 focus:outline-none border border-white/20 w-40"
+                    placeholder="Enter budget"
+                    value={budgetInput}
+                    onChange={(e) => setBudgetInput(e.target.value)}
+                    disabled={budgetLoading || budgetUpdating}
+                  />
+                  {budget ? (
+                    <Button
+                      className="px-4 py-2 flex items-center justify-center"
+                      onClick={handleUpdateBudget}
+                      disabled={budgetUpdating || budgetLoading}
+                    >
+                      {budgetUpdating && <Spinner size="sm" className="mr-2" />}
+                      {budgetUpdating ? "Updating..." : "Update Budget"}
+                    </Button>
+                  ) : (
+                    <Button
+                      className="px-4 py-2 flex items-center justify-center"
+                      onClick={handleAddBudget}
+                      disabled={budgetUpdating || budgetLoading || !budgetInput}
+                    >
+                      {budgetUpdating && <Spinner size="sm" className="mr-2" />}
+                      {budgetUpdating ? "Adding..." : "Add Budget"}
+                    </Button>
+                  )}
+                </div>
+                {budgetLoading && (
+                  <div className="text-xs text-gray-400 mt-2">
+                    <Spinner size="sm" />
+                  </div>
+                )}
+                {budgetError && (
+                  <div className="text-xs text-red-400 mt-2">{budgetError}</div>
                 )}
               </div>
-              {budgetLoading && (
-                <div className="text-xs text-gray-400 mt-2">
-                  <Spinner size="sm" />
-                </div>
-              )}
-              {budgetError && (
-                <div className="text-xs text-red-400 mt-2">{budgetError}</div>
-              )}
             </div>
           </div>
-        </div>
-      </Card>
-
+        </Card>
+      </div>
       {/* Password Modal*/}
       {showPasswordModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
           <Card className="relative w-full max-w-md mx-4 p-8 mb-4">
-            <button
-              className="absolute top-3 right-3 text-gray-300 hover:text-white text-2xl font-bold"
-              onClick={() => setShowPasswordModal(false)}
-              aria-label="Close"
-            >
-              ×
-            </button>
             <h2 className="text-xl font-semibold text-purple-200 mb-6 text-center">
               Change Password
             </h2>
@@ -316,15 +312,10 @@ const Profile = () => {
                 <Button
                   type="submit"
                   disabled={updating}
-                  className="flex-1 py-2 px-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 py-2 px-4 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {updating ? (
-                    <div className="flex items-center justify-center">
-                      <Spinner size="sm" />
-                    </div>
-                  ) : (
-                    "Update Password"
-                  )}
+                  {updating && <Spinner size="sm" className="mr-2" />}
+                  {updating ? "Updating..." : "Update Password"}
                 </Button>
                 <Button
                   type="button"
@@ -333,6 +324,7 @@ const Profile = () => {
                     cancelPasswordChange();
                   }}
                   disabled={updating}
+                  variant="gray"
                   className="flex-1 py-2 px-4 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Cancel

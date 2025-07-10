@@ -76,13 +76,6 @@ const ExpenseModal = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
       <div className="bg-white/10 border border-gray-400/30 rounded-2xl p-8 w-full max-w-xl mx-4 relative shadow-2xl">
-        <button
-          className="absolute top-3 right-3 text-gray-300 hover:text-white text-2xl font-bold"
-          onClick={handleClose}
-          aria-label="Close"
-        >
-          ×
-        </button>
         <h2 className="text-xl font-semibold text-purple-300 mb-6 text-center">
           Add Expense
         </h2>
@@ -189,20 +182,24 @@ const ExpenseModal = ({
               </button>
             </div>
           </div>
-          <Button
-            type="submit"
-            className="px-8 py-3 shadow transition border border-gray-400/30 mt-2"
-            disabled={createExpenseMutation.isLoading || !categoryId}
-          >
-            {createExpenseMutation.isLoading ? (
-              <div className="flex items-center justify-center">
-                <Spinner size="sm" className="mr-2" />
-                Adding...
-              </div>
-            ) : (
-              "Add expense"
-            )}
-          </Button>
+          <div className="flex gap-2 mt-2">
+            <Button
+              type="submit"
+              className="px-8 py-3 shadow transition border border-gray-400/30 flex items-center justify-center"
+              disabled={createExpenseMutation.isPending || !categoryId}
+            >
+              {createExpenseMutation.isPending && <Spinner size="sm" className="mr-2" />}
+              {createExpenseMutation.isPending ? "Adding..." : "Add expense"}
+            </Button>
+            <Button
+              type="button"
+              variant="gray"
+              className="px-8 py-3"
+              onClick={handleClose}
+            >
+              Cancel
+            </Button>
+          </div>
           {isCategoriesError && (
             <div className="text-red-400 mb-2">
               Error: {categoriesError.message}

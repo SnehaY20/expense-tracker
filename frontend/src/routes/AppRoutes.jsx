@@ -7,8 +7,9 @@ import Category from "../pages/Category";
 import Expenses from "../pages/Expenses";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
+import Profile from "../pages/Profile";
 
-import Settings from "../pages/Settings";
+import SettingsLayout from "../pages/SettingsLayout";
 
 import AppLayout from "../layouts/AppLayout";
 
@@ -44,10 +45,12 @@ const AppRoutes = () => {
           path="/settings"
           element={
             <ProtectedRoute>
-              <Settings />
+              <SettingsLayout />
             </ProtectedRoute>
           }
-        />
+        >
+          <Route path="profile" element={<Profile />} />
+        </Route>
       </Routes>
     </AppLayout>
   );

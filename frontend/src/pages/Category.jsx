@@ -162,13 +162,6 @@ const Category = () => {
         {showAddForm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
             <Card className="relative w-full max-w-md mx-4 p-8 mb-4">
-              <button
-                className="absolute top-3 right-3 text-gray-300 hover:text-white text-2xl font-bold"
-                onClick={() => setShowAddForm(false)}
-                aria-label="Close"
-              >
-                ×
-              </button>
               <CategoryForm
                 categories={categories}
                 onClose={() => setShowAddForm(false)}

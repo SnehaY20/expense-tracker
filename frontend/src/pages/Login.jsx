@@ -86,17 +86,11 @@ const Login = () => {
         rightButton={
           <Button
             type="submit"
-            disabled={mutation.isLoading || !email || !password}
-            className="w-full px-8 py-3 rounded-xl shadow-lg transition transform hover:scale-105 disabled:opacity-50"
+            disabled={mutation.isPending || !email || !password}
+            className="w-full px-8 py-3 rounded-xl shadow-lg transition transform hover:scale-105 disabled:opacity-50 flex items-center justify-center"
           >
-            {mutation.isLoading ? (
-              <div className="flex items-center justify-center">
-                <Spinner size="sm" className="mr-2" />
-                Logging in...
-              </div>
-            ) : (
-              "Login"
-            )}
+            {mutation.isPending && <Spinner size="sm" className="mr-2" />}
+            {mutation.isPending ? "Logging in..." : "Login"}
           </Button>
         }
       />
