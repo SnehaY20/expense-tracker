@@ -266,9 +266,12 @@ const ExpenseTable = ({
                 <TableRow>
                   <TableCell
                     colSpan={Object.values(visibleColumns).filter(Boolean).length + 2}
-                  className="text-center py-6 text-gray-400"
-                >
-                    {searchTerm ? "No expenses match your search." : "No expenses found."}
+                    className="py-12 text-gray-400 text-center"
+                    style={{ border: "none" }}
+                  >
+                    <span className="text-lg whitespace-nowrap">
+                      {searchTerm ? "No expenses match your search." : "No expenses found."}
+                    </span>
                   </TableCell>
                 </TableRow>
               ) : (

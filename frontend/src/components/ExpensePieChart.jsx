@@ -16,28 +16,34 @@ const ExpensePieChart = ({ data }) => (
     <h3 className="text-base font-semibold text-gray-100 text-center w-full mb-2">
       Expenses by Category
     </h3>
-    <div className="flex justify-center w-full">
-      <ResponsiveContainer width="100%" height={135}>
-        <PieChart>
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            labelLine={false}
-            label={({ name, percent }) =>
-              `${name} ${(percent * 100).toFixed(0)}%`
-            }
-            outerRadius={40}
-            fill="#8884d8"
-            dataKey="value"
-          >
-            {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
-          </Pie>
-          <Tooltip formatter={(value) => `$${value}`} />
-        </PieChart>
-      </ResponsiveContainer>
+    <div className="flex justify-center w-full" style={{ minHeight: 135 }}>
+      {(!data || data.length === 0) ? (
+        <div className="flex justify-center items-center w-full h-[135px]">
+          <span className="text-gray-400 text-center w-full">No categories to display</span>
+        </div>
+      ) : (
+        <ResponsiveContainer width="100%" height={135}>
+          <PieChart>
+            <Pie
+              data={data}
+              cx="50%"
+              cy="50%"
+              labelLine={false}
+              label={({ name, percent }) =>
+                `${name} ${(percent * 100).toFixed(0)}%`
+              }
+              outerRadius={40}
+              fill="#8884d8"
+              dataKey="value"
+            >
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip formatter={(value) => `$${value}`} />
+          </PieChart>
+        </ResponsiveContainer>
+      )}
     </div>
   </Card>
 );

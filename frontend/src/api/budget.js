@@ -15,7 +15,9 @@ export const fetchBudget = async () => {
     const result = await response.json();
     return result.data;
   } catch (error) {
-    showErrorToast(error.message);
+    if (!error.message.includes("not found")) {
+      showErrorToast(error.message);
+    }
     throw error;
   }
 };
