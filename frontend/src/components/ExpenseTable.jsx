@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
-import { Search, ChevronDown, SquarePen } from "lucide-react";
+import { Search, ChevronDown, SquarePen, Trash2 } from "lucide-react";
 import Spinner from "./Spinner";
+import { deleteExpense } from "../api/expense";
 
 // Table components
 const Table = ({ children, className = "" }) => (
@@ -72,6 +73,8 @@ const ExpenseTable = ({
     createdAt: true,
   });
   const [isColumnsDropdownOpen, setIsColumnsDropdownOpen] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const sortedExpenses = useMemo(() =>
     [...expenses].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
@@ -215,12 +218,12 @@ const ExpenseTable = ({
                 </TableHead>
                 {visibleColumns.category && (
                   <TableHead className="text-purple-300 font-semibold">
-                  Category
+                    Category
                   </TableHead>
-              )}
+                )}
                 {visibleColumns.title && (
                   <TableHead className="text-purple-300 font-semibold">
-                Title
+                    Title
                   </TableHead>
                 )}
                 {visibleColumns.note && (
@@ -230,15 +233,28 @@ const ExpenseTable = ({
                 )}
                 {visibleColumns.amount && (
                   <TableHead className="w-24 text-purple-300 font-semibold">
-                Amount
+                    Amount
                   </TableHead>
                 )}
                 {visibleColumns.createdAt && (
                   <TableHead className="text-purple-300 font-semibold">
-                Created at
+                    Created at
                   </TableHead>
                 )}
-                <TableHead className="w-12 text-purple-300 font-semibold"></TableHead>
+                <TableHead className="w-32 text-purple-300 font-semibold">
+                  {selectedRows.size > 0 && (
+                    <div className="flex items-center justify-start gap-1">
+                      <button
+                        className="p-1 rounded-full hover:bg-red-500/20 transition-colors flex-shrink-0"
+                        onClick={() => setShowDeleteModal(true)}
+                        title="Delete selected"
+                      >
+                        <Trash2 className="text-red-500 h-5 w-5" />
+                      </button>
+                      <span className="text-white text-xs font-semibold whitespace-nowrap">{selectedRows.size} selected</span>
+                    </div>
+                  )}
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -292,39 +308,41 @@ const ExpenseTable = ({
                     </TableCell>
                     {visibleColumns.category && (
                       <TableCell className="text-white">
-                      {getCategoryName(exp.category, categories)}
+                        {getCategoryName(exp.category, categories)}
                       </TableCell>
-                  )}
+                    )}
                     {visibleColumns.title && (
                       <TableCell className="text-white">
-                    {exp.title}
+                        {exp.title}
                       </TableCell>
                     )}
                     {visibleColumns.note && (
                       <TableCell className="text-white">
-                    {exp.note}
+                        {exp.note}
                       </TableCell>
                     )}
                     {visibleColumns.amount && (
                       <TableCell className="w-24 text-white">
-                    {formatAmount(exp.amount)}
+                        {formatAmount(exp.amount)}
                       </TableCell>
                     )}
                     {visibleColumns.createdAt && (
                       <TableCell className="text-white">
                         <div>
-                    {formatDate(exp.createdAt)}
-                    <br />
-                    <span className="text-xs text-gray-400">
-                      {formatTime(exp.createdAt)}
-                    </span>
+                          {formatDate(exp.createdAt)}
+                          <br />
+                          <span className="text-xs text-gray-400">
+                            {formatTime(exp.createdAt)}
+                          </span>
                         </div>
                       </TableCell>
                     )}
-                    <TableCell className="w-12">
-                      <button className="text-gray-400 hover:text-white transition-colors">
-                        <SquarePen className="h-4 w-4" />
-                      </button>
+                    <TableCell className="w-32">
+                      <div className="flex items-center gap-2">
+                        <button className="text-gray-400 hover:text-white transition-colors">
+                          <SquarePen className="h-4 w-4" />
+                        </button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
@@ -333,23 +351,36 @@ const ExpenseTable = ({
           </Table>
         </div>
       </div>
-      {selectedRows.size > 0 && (
-        <div className="mt-4 p-3 bg-purple-500/10 border border-purple-500/20 rounded-lg">
-          <div className="flex items-center justify-between">
-            <span className="text-white">
-              {selectedRows.size} of {filteredExpenses.length} row(s) selected
-            </span>
-            <div className="flex gap-2">
-              <button 
-                onClick={() => setSelectedRows(new Set())}
-                className="px-3 py-1 text-sm bg-gray-700 text-white rounded hover:bg-gray-600 transition-colors"
+      {/* Delete Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white/10 p-8 rounded-2xl shadow-2xl border border-white/20 max-w-sm w-full">
+            <h2 className="text-xl font-bold text-white mb-4 text-center">Do you really want to delete?</h2>
+            <div className="flex justify-center gap-4 mt-6">
+              <button
+                className="px-6 py-2 rounded-xl bg-red-600 text-white hover:bg-red-700 transition"
+                onClick={async () => {
+                  setDeleting(true);
+                  for (const id of selectedRows) {
+                    try { await deleteExpense(id); } catch {}
+                  }
+                  setDeleting(false);
+                  setShowDeleteModal(false);
+                  setSelectedRows(new Set());
+                  if (typeof window !== 'undefined') window.location.reload();
+                }}
+                disabled={deleting}
               >
-                Clear selection
+                {deleting ? 'Deleting...' : 'Yes'}
               </button>
-              <button className="px-3 py-1 text-sm bg-purple-600 text-white rounded hover:bg-purple-700 transition-colors">
-                Export selected
+              <button
+                className="px-6 py-2 rounded-xl bg-gray-700 text-white hover:bg-gray-600 transition"
+                onClick={() => setShowDeleteModal(false)}
+                disabled={deleting}
+              >
+                Cancel
               </button>
-              </div>
+            </div>
           </div>
         </div>
       )}
