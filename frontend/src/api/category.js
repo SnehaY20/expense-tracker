@@ -1,5 +1,5 @@
 import { getAuthHeaders } from "../utils/AuthHeaders";
-import { showSuccessToast, showErrorToast } from "../utils/toast";
+import { showSuccessToast } from "../utils/toast";
 
 // Get all categories
 export const fetchCategories = async () => {
@@ -16,7 +16,6 @@ export const fetchCategories = async () => {
     const result = await response.json();
     return result.data;
   } catch (error) {
-    showErrorToast(error.message);
     throw error;
   }
 };
@@ -36,7 +35,6 @@ export const fetchCategoryById = async (id) => {
 
     return response.json();
   } catch (error) {
-    showErrorToast(error.message);
     throw error;
   }
 };
@@ -58,7 +56,6 @@ export const createCategory = async ({ name }) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    showErrorToast(error.message);
     throw error;
   }
 };
@@ -81,7 +78,6 @@ export const updateCategory = async ({ id, name }) => {
     showSuccessToast("Category updated successfully!");
     return data;
   } catch (error) {
-    showErrorToast(error.message);
     throw error;
   }
 };
@@ -103,7 +99,6 @@ export const deleteCategory = async (id) => {
     showSuccessToast("Category deleted successfully!");
     return data;
   } catch (error) {
-    showErrorToast(error.message);
     throw error;
   }
 };
@@ -124,7 +119,6 @@ export const fetchTopCategories = async () => {
     const result = await response.json();
     return result.data;
   } catch (error) {
-    showErrorToast(error.message);
     throw error;
   }
 };
@@ -145,7 +139,6 @@ export const fetchTotalExpenseByCategory = async (categoryId) => {
     const result = await response.json();
     return result.data;
   } catch (error) {
-    showErrorToast(error.message);
     throw error;
   }
 };

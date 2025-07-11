@@ -11,6 +11,7 @@ import Input from "../components/Input";
 import Spinner from "../components/Spinner";
 import { ProfileCardSkeleton } from "../components/Skeleton";
 import { fetchBudget, createBudget, updateBudget } from "../api/budget";
+import { useAuth } from "../store/AuthStore";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -29,11 +30,14 @@ const Profile = () => {
   const [budgetLoading, setBudgetLoading] = useState(false);
   const [budgetError, setBudgetError] = useState("");
   const [budgetUpdating, setBudgetUpdating] = useState(false);
+  const { isLoggedIn } = useAuth();
 
   useEffect(() => {
-    loadProfile();
-    loadBudget();
-  }, []);
+    if (isLoggedIn) {
+      loadProfile();
+      loadBudget();
+    }
+  }, [isLoggedIn]);
 
   const loadProfile = async () => {
     try {
@@ -41,7 +45,7 @@ const Profile = () => {
       const profileData = await fetchProfile();
       setUser(profileData.data);
     } catch (err) {
-      showErrorToast("Failed to load profile: " + err.message);
+      // showErrorToast("Failed to load profile: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -141,6 +145,8 @@ const Profile = () => {
       setBudgetUpdating(false);
     }
   };
+
+  if (!isLoggedIn) return null;
 
   if (loading) {
     return (

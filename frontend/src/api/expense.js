@@ -1,5 +1,5 @@
 import { getAuthHeaders } from "../utils/AuthHeaders";
-import { showSuccessToast, showErrorToast } from "../utils/toast";
+import { showSuccessToast } from "../utils/toast";
 
 // Get all expenses
 export const fetchExpenses = async () => {
@@ -16,7 +16,6 @@ export const fetchExpenses = async () => {
     const result = await response.json();
     return result.data;
   } catch (error) {
-    showErrorToast(error.message);
     throw error;
   }
 };
@@ -36,7 +35,6 @@ export const fetchExpensesByCategory = async (categoryId) => {
     const result = await response.json();
     return result.data;
   } catch (error) {
-    showErrorToast(error.message);
     throw error;
   }
 };
@@ -57,7 +55,6 @@ export const createExpense = async ({ categoryId, title, amount, note }) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    showErrorToast(error.message);
     throw error;
   }
 };
@@ -79,7 +76,6 @@ export const updateExpense = async ({ id, title, amount, note }) => {
     showSuccessToast("Expense updated successfully!");
     return data;
   } catch (error) {
-    showErrorToast(error.message);
     throw error;
   }
 };
@@ -100,7 +96,6 @@ export const deleteExpense = async (id) => {
     showSuccessToast("Expense deleted successfully!");
     return data;
   } catch (error) {
-    showErrorToast(error.message);
     throw error;
   }
 };
@@ -120,7 +115,6 @@ export const fetchTotalExpenses = async () => {
     const result = await response.json();
     return result.data;
   } catch (error) {
-    showErrorToast(error.message);
     throw error;
   }
 };
@@ -140,7 +134,6 @@ export const fetchRecentExpenses = async (limit = 5) => {
     const result = await response.json();
     return result.data;
   } catch (error) {
-    showErrorToast(error.message);
     throw error;
   }
 };
@@ -160,7 +153,6 @@ export const fetchDailyExpenses = async () => {
     const result = await response.json();
     return result.data;
   } catch (error) {
-    showErrorToast(error.message);
     throw error;
   }
 };

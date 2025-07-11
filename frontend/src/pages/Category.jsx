@@ -9,17 +9,20 @@ import ExpenseTable from "../components/ExpenseTable";
 import Card from "../components/Card";
 import { CategoryListSkeleton } from "../components/Skeleton";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useAuth } from "../store/AuthStore";
 
 const Category = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showScrollButtons, setShowScrollButtons] = useState({ left: false, right: false });
   const categoryListRef = useRef(null);
+  const { isLoggedIn } = useAuth();
 
   // Get all categories
   const { data: categories = [], isLoading: categoriesLoading } = useQuery({
     queryKey: ["categories"],
     queryFn: fetchCategories,
+    enabled: isLoggedIn,
   });
 
   // Get expenses for selected category
@@ -31,7 +34,7 @@ const Category = () => {
   } = useQuery({
     queryKey: ["expenses", selectedCategory?._id],
     queryFn: () => fetchExpensesByCategory(selectedCategory._id),
-    enabled: !!selectedCategory?._id,
+    enabled: isLoggedIn && !!selectedCategory?._id,
   });
 
   // Fetch total expense for selected category
@@ -83,6 +86,8 @@ const Category = () => {
       setTimeout(checkScrollPosition, 100);
     }
   }, [categories]);
+
+  if (!isLoggedIn) return null;
 
   return (
     <BackgroundLayout>
