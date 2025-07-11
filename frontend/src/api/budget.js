@@ -27,7 +27,6 @@ export const createBudget = async ({ amount }) => {
     throw new Error(error.error || "Unknown error");
   }
   const data = await response.json();
-  showSuccessToast("Budget created successfully!");
   return data;
 };
 
@@ -43,7 +42,6 @@ export const updateBudget = async ({ id, amount }) => {
     throw new Error(error.error || "Unknown error");
   }
   const data = await response.json();
-  showSuccessToast("Budget updated successfully!");
   return data;
 };
 
@@ -58,6 +56,5 @@ export const deleteBudget = async (id) => {
     throw new Error(error.error || "Unknown error");
   }
   const data = await response.json();
-  showSuccessToast("Budget deleted successfully!");
   return data;
 };

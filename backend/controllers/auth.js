@@ -168,3 +168,39 @@ exports.updatePassword = asyncHandler(async (req, res, next) => {
     });
   }
 });
+
+/**
+ * @desc      Update name
+ * @route     PUT /api/v1/auth/update-name
+ * @access    Private
+ */
+exports.updateName = asyncHandler(async (req, res, next) => {
+  const TAG = "[updateName]";
+  try {
+    const user = await User.findById(req.user.id);
+    const { name } = req.body;
+
+    if (!name) {
+      logger.error(`${TAG} Missing new name for user: ${user.email}`);
+      return res.status(400).json({
+        success: false,
+        error: "New name is required",
+      });
+    }
+
+    user.name = name;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Name updated successfully",
+      name: user.name,
+    });
+  } catch (error) {
+    logger.error(`${TAG} ${error.message}`);
+    return res.status(500).json({
+      success: false,
+      error: ERROR.SERVER_ERROR,
+    });
+  }
+});

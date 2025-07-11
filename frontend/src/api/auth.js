@@ -79,3 +79,17 @@ export const updatePassword = async ({
   }
   return response.json();
 };
+
+// Update name
+export const updateName = async (name) => {
+  const response = await fetch("/api/v1/auth/update-name", {
+    method: "PUT",
+    headers: getAuthHeaders(),
+    body: JSON.stringify({ name }),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "Failed to update name");
+  }
+  return response.json();
+};
