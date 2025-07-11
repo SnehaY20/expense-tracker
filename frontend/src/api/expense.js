@@ -73,7 +73,6 @@ export const updateExpense = async ({ id, title, amount, note }) => {
       throw new Error(error.message || "Failed to update expense");
     }
     const data = await response.json();
-    showSuccessToast("Expense updated successfully!");
     return data;
   } catch (error) {
     throw error;
@@ -93,7 +92,6 @@ export const deleteExpense = async (id) => {
       throw new Error(error.message || "Failed to delete expense");
     }
     const data = await response.json();
-    showSuccessToast("Expense deleted successfully!");
     return data;
   } catch (error) {
     throw error;

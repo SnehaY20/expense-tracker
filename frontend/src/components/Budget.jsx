@@ -3,11 +3,13 @@ import Button from "./Button";
 import Spinner from "./Spinner";
 import { showSuccessToast, showErrorToast } from "../utils/toast";
 import { createBudget, updateBudget } from "../api/budget";
+import { useQueryClient } from "@tanstack/react-query";
 
-const Budget = ({ budget, reloadBudget }) => {
+const Budget = ({ budget }) => {
   const [editingBudget, setEditingBudget] = useState(false);
   const [budgetInput, setBudgetInput] = useState(budget?.amount || "");
   const [budgetUpdating, setBudgetUpdating] = useState(false);
+  const queryClient = useQueryClient();
 
   const handleBudgetEdit = () => {
     setEditingBudget(true);
@@ -25,7 +27,7 @@ const Budget = ({ budget, reloadBudget }) => {
       await createBudget({ amount: Number(budgetInput) });
       showSuccessToast("Budget added successfully!");
       setEditingBudget(false);
-      reloadBudget && reloadBudget();
+      await queryClient.invalidateQueries(['budget']);
     } catch (err) {
       showErrorToast(err.message || "Failed to add budget");
     } finally {
@@ -40,7 +42,7 @@ const Budget = ({ budget, reloadBudget }) => {
       await updateBudget({ id: budget._id, amount: Number(budgetInput) });
       showSuccessToast("Budget updated successfully!");
       setEditingBudget(false);
-      reloadBudget && reloadBudget();
+      await queryClient.invalidateQueries(['budget']);
     } catch (err) {
       showErrorToast(err.message || "Failed to update budget");
     } finally {

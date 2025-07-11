@@ -7,10 +7,11 @@ import { useAuth } from "../store/AuthStore";
 import Name from "../components/Name";
 import Password from "../components/Password";
 import Budget from "../components/Budget";
+import { useQuery } from "@tanstack/react-query";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
-  const [budget, setBudget] = useState(null);
+  const { data: budget } = useQuery({ queryKey: ['budget'], queryFn: fetchBudget });
   const [loading, setLoading] = useState(true);
   const { isLoggedIn } = useAuth();
 
@@ -28,7 +29,7 @@ const Profile = () => {
         fetchBudget().catch(() => null) 
       ]);
       setUser(profileData.data);
-      setBudget(budgetData);
+      // setBudget(budgetData); // This line is removed as per the edit hint
     } finally {
       setLoading(false);
     }
@@ -74,7 +75,7 @@ const Profile = () => {
                 <div className="text-lg font-bold text-white">{user?.email || ""}</div>
               </div>
               <Password user={user} />
-              <Budget budget={budget} reloadProfile={loadProfile} />
+              <Budget budget={budget} />
             </div>
           </div>
         </Card>

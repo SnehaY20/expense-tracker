@@ -1,7 +1,12 @@
 import React, { useState, useMemo } from "react";
-import { Search, ChevronDown, SquarePen, Trash2 } from "lucide-react";
+import { SquarePen, Trash2 } from "lucide-react";
 import Spinner from "./Spinner";
 import { deleteExpense } from "../api/expense";
+import { formatDate, formatTime, formatAmount, getCategoryName } from "../utils/expenseTableUtils";
+import ExpenseDeleteModal from "./ExpenseDeleteModal";
+import ExpenseTableControls from "./ExpenseTableControls";
+import ExpenseEditModal from "./ExpenseEditModal";
+import { useQueryClient } from "@tanstack/react-query";
 
 // Table components
 const Table = ({ children, className = "" }) => (
@@ -22,31 +27,6 @@ const TableHead = ({ children, className = "" }) => (
 const TableCell = ({ children, className = "" }) => (
   <td className={`p-4 align-middle [&:has([role=checkbox])]:pr-0 ${className}`}>{children}</td>
 );
-
-function formatDate(dateString) {
-  return new Date(dateString).toLocaleDateString("en-IN", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
-}
-function formatTime(dateString) {
-  return new Date(dateString).toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-function formatAmount(amount) {
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-  }).format(amount);
-}
-
-const getCategoryName = (id, categories) => {
-  const cat = categories.find((c) => c._id === id);
-  return cat ? cat.name : "Unknown";
-};
 
 const ExpenseTable = ({
   expenses = [],
@@ -75,6 +55,9 @@ const ExpenseTable = ({
   const [isColumnsDropdownOpen, setIsColumnsDropdownOpen] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [editingExpense, setEditingExpense] = useState(null);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const queryClient = useQueryClient();
 
   const sortedExpenses = useMemo(() =>
     [...expenses].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
@@ -122,75 +105,37 @@ const ExpenseTable = ({
 
   return (
     <div className="relative w-full">
-      <div className="flex items-center gap-4 justify-between">
-        <div className="flex gap-2 items-center">
-          <div className="relative max-w-md w-full">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-            <input
-              type="text"
-              placeholder="Filter expenses..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            />
-          </div>
-          <div className="relative">
-            <button
-              onClick={() => setIsColumnsDropdownOpen(!isColumnsDropdownOpen)}
-              className="flex items-center justify-between gap-2 px-4 py-2 w-32 bg-gray-800 border border-gray-600 rounded-lg text-white hover:bg-gray-700 transition-colors"
-            >
-              Columns
-              <ChevronDown className={`h-4 w-4 transition-transform ${isColumnsDropdownOpen ? 'rotate-180' : ''}`} />
-            </button>
-            {isColumnsDropdownOpen && (
-              <div className="absolute left-0 top-full mt-2 w-32 bg-gray-800 border border-gray-600 rounded-lg shadow-lg z-10">
-                <div className="p-2">
-                  {Object.entries({
-                    category: "Category",
-                    title: "Title", 
-                    note: "Note",
-                    amount: "Amount",
-                    createdAt: "Created at"
-                  }).map(([key, label]) => (
-                    <label key={key} className="flex items-center gap-2 p-2 hover:bg-gray-700 rounded cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={visibleColumns[key]}
-                        onChange={() => handleColumnToggle(key)}
-                        className="text-purple-500 focus:ring-purple-500"
-                      />
-                      <span className="text-white text-sm">{label}</span>
-                    </label>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-          {showTotalBelow && filteredExpenses && filteredExpenses.length > 0 && !isLoading && !isError && (
-            <div className="py-1 w-full rounded-lg bg-white/10 border border-green-400 text-green-400 font-bold text-lg flex items-center justify-center">
-              <>Total: {(typeof customTotal === 'number' ? customTotal : filteredExpenses.reduce((sum, exp) => sum + exp.amount, 0)).toLocaleString("en-IN", { style: "currency", currency: "INR" })}</>
-            </div>
-          )}
-        </div>
-        <div className="flex gap-2 items-center">
-          {showAddExpenseButton && (
-            <button
-              onClick={onAddExpense}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 font-medium"
-            >
-              Add Expense
-            </button>
-          )}
-          {showAddCategoryButton && (
-            <button
-              onClick={onAddCategory}
-              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded-lg hover:from-purple-600 hover:to-pink-600 transition-all duration-200 font-medium"
-            >
-              Add Category
-            </button>
-          )}
-        </div>
-      </div>
+      <ExpenseTableControls
+        filteredExpenses={filteredExpenses}
+        selectedRows={selectedRows}
+        setSelectedRows={setSelectedRows}
+        showDeleteModal={showDeleteModal}
+        setShowDeleteModal={setShowDeleteModal}
+        deleting={deleting}
+        setDeleting={setDeleting}
+        onDelete={async () => {
+          setDeleting(true);
+          for (const id of selectedRows) {
+            try { await deleteExpense(id); } catch {}
+          }
+          setDeleting(false);
+          setShowDeleteModal(false);
+          setSelectedRows(new Set());
+          await queryClient.invalidateQueries(['expenses']);
+        }}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        visibleColumns={visibleColumns}
+        handleColumnToggle={handleColumnToggle}
+        showAddCategoryButton={showAddCategoryButton}
+        onAddCategory={onAddCategory}
+        showAddExpenseButton={showAddExpenseButton}
+        onAddExpense={onAddExpense}
+        showTotalBelow={showTotalBelow}
+        customTotal={customTotal}
+        isColumnsDropdownOpen={isColumnsDropdownOpen}
+        setIsColumnsDropdownOpen={setIsColumnsDropdownOpen}
+      />
       <div className="rounded-2xl overflow-hidden mt-4">
         <div
           className="overflow-auto border border-gray-400/30 bg-white/5 scrollbar-hide pb-4"
@@ -339,7 +284,7 @@ const ExpenseTable = ({
                     )}
                     <TableCell className="w-32">
                       <div className="flex items-center gap-2">
-                        <button className="text-gray-400 hover:text-white transition-colors">
+                        <button className="text-gray-400 hover:text-white transition-colors" onClick={() => { setEditingExpense(exp); setShowEditModal(true); }}>
                           <SquarePen className="h-4 w-4" />
                         </button>
                       </div>
@@ -351,39 +296,31 @@ const ExpenseTable = ({
           </Table>
         </div>
       </div>
-      {/* Delete Modal */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="bg-white/10 p-8 rounded-2xl shadow-2xl border border-white/20 max-w-sm w-full">
-            <h2 className="text-xl font-bold text-white mb-4 text-center">Do you really want to delete?</h2>
-            <div className="flex justify-center gap-4 mt-6">
-              <button
-                className="px-6 py-2 rounded-xl bg-red-600 text-white hover:bg-red-700 transition"
-                onClick={async () => {
-                  setDeleting(true);
-                  for (const id of selectedRows) {
-                    try { await deleteExpense(id); } catch {}
-                  }
-                  setDeleting(false);
-                  setShowDeleteModal(false);
-                  setSelectedRows(new Set());
-                  if (typeof window !== 'undefined') window.location.reload();
-                }}
-                disabled={deleting}
-              >
-                {deleting ? 'Deleting...' : 'Yes'}
-              </button>
-              <button
-                className="px-6 py-2 rounded-xl bg-gray-700 text-white hover:bg-gray-600 transition"
-                onClick={() => setShowDeleteModal(false)}
-                disabled={deleting}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ExpenseDeleteModal
+        show={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={async () => {
+          setDeleting(true);
+          for (const id of selectedRows) {
+            try { await deleteExpense(id); } catch {}
+          }
+          setDeleting(false);
+          setShowDeleteModal(false);
+          setSelectedRows(new Set());
+          await queryClient.invalidateQueries(['expenses']);
+        }}
+        deleting={deleting}
+        selectedCount={selectedRows.size}
+      />
+      <ExpenseEditModal
+        show={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        expense={editingExpense}
+        onUpdate={async () => {
+          await queryClient.invalidateQueries(['expenses']);
+          setShowEditModal(false);
+        }}
+      />
       {isColumnsDropdownOpen && (
         <div 
           className="fixed inset-0 z-5" 

@@ -4,10 +4,12 @@ import Navbar from "../components/Navbar";
 import Overview from "../components/Overview";
 import { useAuth } from "../store/AuthStore";
 import BackgroundLayout from "../components/BackgroundLayout";
+import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
   const { isLoggedIn } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setIsVisible(true);
@@ -52,9 +54,7 @@ export default function Home() {
               <div className="flex flex-col sm:flex-row gap-4 pt-4 justify-center">
                 <button
                   className="group px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 rounded-2xl font-medium text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-2xl hover:shadow-purple-500/25 flex items-center justify-center space-x-2"
-                  onClick={() => {
-                    window.location.href = "/register";
-                  }}
+                  onClick={() => navigate("/register")}
                 >
                   <span className="bg-gradient-to-r from-gray-200 via-gray-100 to-gray-400 bg-clip-text text-transparent">
                     Start Tracking Free
