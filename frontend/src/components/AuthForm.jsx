@@ -1,5 +1,6 @@
 import React from "react";
 import Input from "./Input";
+import { User, UserPlus } from "lucide-react";
 
 const AuthForm = ({
   mode,
@@ -7,7 +8,6 @@ const AuthForm = ({
   onSubmit,
   error,
   success,
-  loading,
   leftButton,
   rightButton,
   onboardingSteps,
@@ -16,41 +16,15 @@ const AuthForm = ({
   mutation,
 }) => {
   let formIcon = null;
-  let svg =
+  let icon =
     mode === "login" ? (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
-        className="w-10 h-10 text-white"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m12 0A2.25 2.25 0 0016.5 8.25h-9A2.25 2.25 0 005.25 10.5m12 0v7.125c0 1.243-1.007 2.25-2.25 2.25h-6a2.25 2.25 0 01-2.25-2.25V10.5m12 0H5.25"
-        />
-      </svg>
+      <User size={40} className="text-white" />
     ) : (
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
-        className="w-10 h-10 text-white"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118A7.5 7.5 0 0112 17.25c2.086 0 3.977.797 5.499 2.118M19.5 10.5h-3m0 0v-3m0 3v3"
-        />
-      </svg>
+      <UserPlus size={40} className="text-white" />
     );
   formIcon = (
     <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
-      {svg}
+      {icon}
     </div>
   );
 
@@ -58,7 +32,7 @@ const AuthForm = ({
     //bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900
     <div className="min-h-screen  flex items-center justify-center p-4">
       <div className="w-full max-w-md mx-auto">
-        <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/20">
+        <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-4 shadow-2xl border border-white/20 overflow-hidden max-h-[520px]">
           {onboardingSteps && typeof currentStep === "number" ? (
             <>
               <div className="flex justify-center mb-8">

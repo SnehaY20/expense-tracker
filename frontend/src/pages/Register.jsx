@@ -111,29 +111,31 @@ const Register = () => {
               {loading && <Spinner size="sm" className="mr-2" />}
               {loading ? "Registering..." : "Register"}
             </Button>
-            <Button
-              className="flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-200 text-white hover:bg-white/10 hover:scale-105"
-              type="button"
-              onClick={() => navigate("/login")}
-              disabled={loading}
-            >
-              <span>Login</span>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="lucide lucide-chevron-right"
-                aria-hidden="true"
+            <div className="flex justify-end mt-2">
+              <button
+                onClick={() => navigate("/login")}
+                className="flex items-center space-x-2 px-4 py-2 rounded-xl text-white hover:bg-white/10 transition duration-200"
+                type="button"
+                disabled={loading}
               >
-                <path d="m9 18 6-6-6-6"></path>
-              </svg>
-            </Button>
+                <span>Login</span>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="lucide lucide-chevron-right"
+                  aria-hidden="true"
+                >
+                  <path d="m9 18 6-6-6-6"></path>
+                </svg>
+              </button>
+            </div>
           </>
         }
       />

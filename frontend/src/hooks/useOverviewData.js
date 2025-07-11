@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { fetchExpenses, createExpense } from "../api/expense";
 import { fetchCategories } from "../api/category";
-import { showErrorToast } from "../utils/toast";
 import {
   getCurrentMonthExpenses,
   getCategoryTotals,
@@ -46,7 +45,7 @@ export const useOverviewData = () => {
       setShowQuickAdd(false);
       fetchData();
     } catch (error) {
-      showErrorToast("Failed to add expense");
+       showErrorToast("Failed to add expense");
     }
   };
 

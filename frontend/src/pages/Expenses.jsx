@@ -5,11 +5,12 @@ import { fetchExpenses } from "../api/expense";
 import BackgroundLayout from "../components/BackgroundLayout";
 import ExpenseModal from "../components/ExpenseModal";
 import ExpenseTable from "../components/ExpenseTable";
-import Button from "../components/Button";
 import { ExpenseTableSkeleton } from "../components/Skeleton";
+import { useAuth } from "../store/AuthStore";
 
 const Expenses = () => {
   const [showModal, setShowModal] = useState(false);
+  const { isLoggedIn } = useAuth();
 
   // Fetch categories
   const {
@@ -20,6 +21,7 @@ const Expenses = () => {
   } = useQuery({
     queryKey: ["categories"],
     queryFn: fetchCategories,
+    enabled: isLoggedIn,
   });
 
   // Fetch expenses
@@ -32,7 +34,10 @@ const Expenses = () => {
   } = useQuery({
     queryKey: ["expenses"],
     queryFn: fetchExpenses,
+    enabled: isLoggedIn,
   });
+
+  if (!isLoggedIn) return null;
 
   return (
     <BackgroundLayout>
