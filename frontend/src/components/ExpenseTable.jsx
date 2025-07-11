@@ -42,6 +42,11 @@ function formatAmount(amount) {
   }).format(amount);
 }
 
+const getCategoryName = (id, categories) => {
+  const cat = categories.find((c) => c._id === id);
+  return cat ? cat.name : "Unknown";
+};
+
 const ExpenseTable = ({
   expenses = [],
   categories = [],
@@ -68,11 +73,6 @@ const ExpenseTable = ({
   });
   const [isColumnsDropdownOpen, setIsColumnsDropdownOpen] = useState(false);
 
-  const getCategoryName = (id) => {
-    const cat = categories.find((c) => c._id === id);
-    return cat ? cat.name : "Unknown";
-  };
-
   const sortedExpenses = useMemo(() =>
     [...expenses].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
     [expenses]
@@ -83,10 +83,10 @@ const ExpenseTable = ({
     return sortedExpenses.filter(expense =>
       (expense.title && expense.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (expense.note && expense.note.toLowerCase().includes(searchTerm.toLowerCase())) ||
-      (getCategoryName(expense.category).toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (getCategoryName(expense.category, categories).toLowerCase().includes(searchTerm.toLowerCase())) ||
       (formatAmount(expense.amount).toLowerCase().includes(searchTerm.toLowerCase()))
     );
-  }, [sortedExpenses, searchTerm]);
+  }, [sortedExpenses, searchTerm, categories]);
 
   const handleRowSelect = (expenseId) => {
     const newSelected = new Set(selectedRows);
@@ -292,7 +292,7 @@ const ExpenseTable = ({
                     </TableCell>
                     {visibleColumns.category && (
                       <TableCell className="text-white">
-                      {getCategoryName(exp.category)}
+                      {getCategoryName(exp.category, categories)}
                       </TableCell>
                   )}
                     {visibleColumns.title && (
