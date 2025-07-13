@@ -93,7 +93,7 @@ const Overview = () => {
 
   return (
 
-        <div className="space-y-3 pb-6 p-3 ">
+        <div className="space-y-3 p-6">
       {/* Top Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-3">
         <SummaryCard
@@ -124,7 +124,7 @@ const Overview = () => {
       {/* Charts and Categories Section */}
       <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-4 xl:grid-cols-4 gap-3">
         {/* Left Column - Pie Chart and Top Categories */}
-        <div className="col-span-1 md:col-span-1 lg:col-span-2 xl:col-span-2 space-y-3">
+        <div className="col-span-1 md:col-span-1 lg:col-span-2 xl:col-span-2 space-y-6">
           {/* Pie Chart */}
           <div className="h-[200px]">
             <ExpensePieChart data={loading ? [] : pieChartData} className="w-full h-full" />

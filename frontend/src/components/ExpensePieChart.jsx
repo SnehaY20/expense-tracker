@@ -13,16 +13,16 @@ const COLORS = [
 
 const ExpensePieChart = ({ data }) => (
   <Card className="p-4 flex flex-col items-center">
-    <h3 className="text-base font-semibold text-gray-100 text-center w-full mb-2">
+    <h3 className="text-base font-semibold text-gray-100 text-center w-full mb-4">
       Expenses by Category
     </h3>
-    <div className="flex justify-center w-full" style={{ minHeight: 135 }}>
+    <div className="flex justify-center w-full">
       {(!data || data.length === 0) ? (
-        <div className="flex justify-center items-center w-full h-[135px]">
+        <div className="flex justify-center items-center w-full">
           <span className="text-gray-400 text-center w-full">No categories to display</span>
         </div>
       ) : (
-        <ResponsiveContainer width="100%" height={135}>
+        <ResponsiveContainer width="100%" height={140}>
           <PieChart>
             <Pie
               data={data}
