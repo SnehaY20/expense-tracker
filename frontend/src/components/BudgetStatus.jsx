@@ -81,9 +81,9 @@ const BudgetStatus = ({ spent = 0, limit = 0, loading = false, className = "" })
     <Card className={`w-full h-full bg-white/10 backdrop-blur-md shadow-lg rounded-xl p-1 flex flex-col justify-between border border-white/20 ${className}`}>
       <div className="flex items-center justify-between mb-1 px-2">
         <div className="flex flex-col items-start">
-          <span className="text-[10px] text-gray-300 font-medium">Spent</span>
+          <span className="text-[14px] text-gray-300 font-medium">Spent</span>
           <span
-            className={`text-xs font-extrabold ${
+            className={`text-md font-extrabold ${
               percent >= 100
                 ? "text-red-400"
                 : percent >= 90
@@ -97,10 +97,10 @@ const BudgetStatus = ({ spent = 0, limit = 0, loading = false, className = "" })
           </span>
         </div>
         <div className="flex flex-col items-end">
-          <span className="text-[10px] text-gray-300 font-medium">
+          <span className="text-[14px] text-gray-300 font-medium">
             Current Limit
           </span>
-          <span className="text-xs font-extrabold text-gray-100">
+          <span className="text-md font-extrabold text-gray-100">
             ₹{limit.toLocaleString()}
           </span>
         </div>
