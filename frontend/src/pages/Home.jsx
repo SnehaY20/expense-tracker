@@ -13,7 +13,15 @@ export default function Home() {
 
   useEffect(() => {
     setIsVisible(true);
-  }, []);
+
+    if (isLoggedIn === false) {
+      navigate("/login", { replace: true });
+    }
+  }, [isLoggedIn, navigate]);
+
+  if (isLoggedIn === false) {
+    return null;
+  }
 
   return (
     <BackgroundLayout>

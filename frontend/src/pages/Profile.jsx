@@ -8,12 +8,14 @@ import Name from "../components/Name";
 import Password from "../components/Password";
 import Budget from "../components/Budget";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
   const { data: budget } = useQuery({ queryKey: ['budget'], queryFn: fetchBudget });
   const [loading, setLoading] = useState(true);
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, logout } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -29,7 +31,13 @@ const Profile = () => {
         fetchBudget().catch(() => null) 
       ]);
       setUser(profileData.data);
-      // setBudget(budgetData); // This line is removed as per the edit hint
+    } catch (error) {
+      if (error.status === 401 || error.message?.includes('401') || error.message?.includes('Unauthorized')) {
+        logout();
+        navigate("/login", { replace: true });
+        return;
+      }
+      // Optionally handle other errors here
     } finally {
       setLoading(false);
     }
