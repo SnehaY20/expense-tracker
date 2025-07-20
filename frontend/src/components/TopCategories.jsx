@@ -1,123 +1,159 @@
-import React from "react";
-import Card from "./Card";
+import React, { useState, useEffect } from "react";
+import { DollarSign, TrendingUp } from "lucide-react";
+import SummaryCard from "./SummaryCard";
+import TopCategories from "./TopCategories";
+import ExpensePieChart from "./ExpensePieChart";
+import MonthlyTrendChart from "./MonthlyTrendChart";
+import BudgetStatus from "./BudgetStatus";
 import Spinner from "./Spinner";
+import { fetchTopCategories } from "../api/category";
+import { fetchBudget } from "../api/budget";
+import { fetchTotalExpenses, fetchDailyExpenses } from "../api/expense";
 
-const COLORS = [
-  "#0088FE",
-  "#00C49F", 
-  "#FFBB28",
-  "#FF8042",
-  "#8884D8",
-  "#82CA9D",
-];
+const Overview = () => {
+  const [topCategories, setTopCategories] = useState([]);
+  const [budget, setBudget] = useState(null);
+  const [totalExpenses, setTotalExpenses] = useState(0);
+  const [highestCategory, setHighestCategory] = useState({ name: "None", amount: 0 });
+  const [dailyExpenses, setDailyExpenses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [budgetLoading, setBudgetLoading] = useState(true);
+  const [totalExpensesLoading, setTotalExpensesLoading] = useState(true);
+  const [dailyExpensesLoading, setDailyExpensesLoading] = useState(true);
 
-const TopCategories = ({ categories = [], currencySymbol = "₹", loading = false, className = "" }) => {
-  // CSS for hiding webkit scrollbar
-  const scrollbarStyle = `
-    .hide-scrollbar::-webkit-scrollbar {
-      display: none;
-    }
-    .hide-scrollbar:hover::-webkit-scrollbar {
-      display: block;
-      width: 6px;
-    }
-    .hide-scrollbar:hover::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    .hide-scrollbar:hover::-webkit-scrollbar-thumb {
-      background: #888;
-      border-radius: 3px;
-    }
-    .hide-scrollbar:hover::-webkit-scrollbar-thumb:hover {
-      background: #555;
-    }
-  `;
-  if (loading) {
-    return (
-      <Card className={className}>
-        <div className="h-full flex flex-col">
-          <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-3">
-            Top Categories This Month
-          </h3>
-          <div className="flex-1 flex justify-center items-center">
-            <Spinner />
-          </div>
-        </div>
-      </Card>
-    );
-  }
+  useEffect(() => {
+    const loadTopCategories = async () => {
+      try {
+        setLoading(true);
+        const data = await fetchTopCategories();
+        setTopCategories(data);
+        if (data && data.length > 0) {
+          setHighestCategory({
+            name: data[0].name,
+            amount: data[0].totalAmount || data[0].amount
+          });
+        }
+      } catch (error) {
+        console.error("Failed to load top categories:", error);
+        setTopCategories([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (!categories || categories.length === 0) {
-    return (
-      <Card className={className}>
-        <div className="h-full flex flex-col">
-          <h3 className="text-base font-semibold text-gray-800 dark:text-white mb-3">
-            Top Categories This Month
-          </h3>
-          <div className="flex-1 flex justify-center items-center">
-            <p className="text-gray-500 dark:text-gray-400">
-              No categories found
-            </p>
-          </div>
-        </div>
-      </Card>
-    );
-  }
+    const loadBudget = async () => {
+      try {
+        setBudgetLoading(true);
+        const data = await fetchBudget();
+        setBudget(data);
+      } catch (error) {
+        console.error("Failed to load budget:", error);
+        setBudget(null);
+      } finally {
+        setBudgetLoading(false);
+      }
+    };
+
+    const loadTotalExpenses = async () => {
+      try {
+        setTotalExpensesLoading(true);
+        const data = await fetchTotalExpenses();
+        setTotalExpenses(data);
+      } catch (error) {
+        console.error("Failed to load total expenses:", error);
+        setTotalExpenses(0);
+      } finally {
+        setTotalExpensesLoading(false);
+      }
+    };
+
+    const loadDailyExpenses = async () => {
+      try {
+        setDailyExpensesLoading(true);
+        const data = await fetchDailyExpenses();
+        setDailyExpenses(data);
+      } catch (error) {
+        console.error("Failed to load daily expenses:", error);
+        setDailyExpenses([]);
+      } finally {
+        setDailyExpensesLoading(false);
+      }
+    };
+
+    loadTopCategories();
+    loadBudget();
+    loadTotalExpenses();
+    loadDailyExpenses();
+  }, []);
+
+  const pieChartData = topCategories.map(category => ({
+    name: category.name,
+    value: category.totalAmount || category.amount || 0
+  }));
 
   return (
-    <Card className={`${className}`}>
-      <style>{scrollbarStyle}</style>
-      <div className="h-full flex flex-col">
-        <div className="mb-3 flex-shrink-0">
-          <h3 className="text-base font-semibold text-gray-800 dark:text-white">
-            Top Categories This Month
-          </h3>
+    <div className="h-screen overflow-y-auto overflow-x-hidden">
+      <div className="space-y-4 p-4 md:p-6 pb-8">
+        {/* Top Summary Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <SummaryCard
+            title="Total Expenses (This Month)"
+            value={totalExpensesLoading ? <Spinner /> : `₹${totalExpenses.toLocaleString()}`}
+            icon={DollarSign}
+            iconColor="text-blue-400"
+            className="h-24"
+          />
+          <SummaryCard
+            title="Highest Spent Category"
+            value={loading ? <Spinner /> : highestCategory.name}
+            subtitle={loading ? "" : `₹${highestCategory.amount.toLocaleString()}`}
+            icon={TrendingUp}
+            iconColor="text-orange-400"
+            className="h-24"
+          />
+          <div className="col-span-1 sm:col-span-2">
+            <BudgetStatus 
+              spent={totalExpenses} 
+              limit={budget?.amount || 0} 
+              loading={budgetLoading || totalExpensesLoading}
+              className="h-24"
+            />
+          </div>
         </div>
-        <div 
-          className="flex-1 overflow-y-auto hide-scrollbar" 
-          style={{
-            scrollbarWidth: 'none',
-            msOverflowStyle: 'none'
-          }} 
-          onMouseEnter={(e) => {
-            e.target.style.scrollbarWidth = 'thin';
-            e.target.style.msOverflowStyle = 'auto';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.scrollbarWidth = 'none';
-            e.target.style.msOverflowStyle = 'none';
-          }}
-        >
-          <div className="space-y-2">
-            {categories.map((category, index) => (
-              <div
-                key={category.id || index}
-                className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-800 rounded-lg"
-              >
-                <div className="flex items-center gap-2 min-w-0 flex-1">
-                  <div
-                    className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-medium flex-shrink-0"
-                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                  >
-                    {index + 1}
-                  </div>
-                  <span className="text-gray-700 dark:text-gray-300 font-medium truncate text-sm">
-                    {category.name}
-                  </span>
-                </div>
-                <div className="text-right flex-shrink-0 ml-2">
-                  <span className="text-gray-900 dark:text-white font-semibold text-sm">
-                    {currencySymbol}
-                    {(category.totalAmount || category.amount || 0).toLocaleString()}
-                  </span>
-                </div>
-              </div>
-            ))}
+
+        {/* Charts and Categories Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {/* Left Column - Pie Chart and Top Categories */}
+          <div className="space-y-4">
+            {/* Pie Chart Section */}
+            <div className="h-80">
+              <ExpensePieChart data={loading ? [] : pieChartData} className="w-full h-full" />
+            </div>
+            
+            {/* Top Categories Section */}
+            <div className="h-80">
+              <TopCategories
+                categories={topCategories}
+                currencySymbol="₹"
+                loading={loading}
+                className="w-full h-full"
+              />
+            </div>
+          </div>
+          
+          {/* Right Column - Monthly Trend Chart */}
+          <div className="h-[42rem]">
+            <MonthlyTrendChart 
+              data={dailyExpenses} 
+              budget={budget?.amount || 0}
+              loading={dailyExpensesLoading}
+              className="w-full h-full"
+            />
           </div>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
 
-export default TopCategories;
+export default Overview;
