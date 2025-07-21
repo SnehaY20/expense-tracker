@@ -23,7 +23,7 @@ const SettingsLayout = () => {
   const isProfile = location.pathname === "/settings/profile";
 
   return (
-    <div className="flex items-start bg-transparent">
+    <div className="flex items-start bg-transparent mt-6">
       <div className="w-80 bg-white/10 backdrop-blur-md p-6 flex flex-col gap-4 rounded-2xl shadow-2xl overflow-hidden">
         <div className="text-xs text-gray-400 mb-2 font-bold tracking-widest">
           USER SETTINGS

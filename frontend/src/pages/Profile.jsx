@@ -14,14 +14,14 @@ const Profile = () => {
   const [user, setUser] = useState(null);
   const { data: budget } = useQuery({ queryKey: ['budget'], queryFn: fetchBudget });
   const [loading, setLoading] = useState(true);
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, logout, authChecked } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isLoggedIn) {
+    if (authChecked && isLoggedIn) {
       loadProfile();
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, authChecked]);
 
   const loadProfile = async () => {
     try {
@@ -37,12 +37,12 @@ const Profile = () => {
         navigate("/login", { replace: true });
         return;
       }
-      // Optionally handle other errors here
     } finally {
       setLoading(false);
     }
   };
 
+  if (!authChecked) return null;
   if (!isLoggedIn) return null;
 
   if (loading) {

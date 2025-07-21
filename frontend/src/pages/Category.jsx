@@ -10,13 +10,16 @@ import Card from "../components/Card";
 import { CategoryListSkeleton } from "../components/Skeleton";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuth } from "../store/AuthStore";
+import { useSidebar } from "../components/Sidebar";
 
 const Category = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showScrollButtons, setShowScrollButtons] = useState({ left: false, right: false });
   const categoryListRef = useRef(null);
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, authChecked } = useAuth();
+  const { open } = useSidebar();
+  const sidebarWidth = open ? 190 : 80;
 
   // Get all categories
   const { data: categories = [], isLoading: categoriesLoading } = useQuery({
@@ -25,7 +28,6 @@ const Category = () => {
     enabled: isLoggedIn,
   });
 
-  // Get expenses for selected category
   const {
     data: expenses = [],
     isLoading: expensesLoading,
@@ -36,8 +38,6 @@ const Category = () => {
     queryFn: () => fetchExpensesByCategory(selectedCategory._id),
     enabled: isLoggedIn && !!selectedCategory?._id,
   });
-
-  // Fetch total expense for selected category
   const [categoryTotal, setCategoryTotal] = useState(0);
   useEffect(() => {
     const getTotal = async () => {
@@ -62,18 +62,16 @@ const Category = () => {
   const scrollCategoryList = (direction) => {
     const container = categoryListRef.current;
     if (!container) return;
-    
-    const scrollAmount = 200;
-    container.scrollBy({ 
-      left: direction === "left" ? -scrollAmount : scrollAmount, 
-      behavior: "smooth" 
+    const scrollAmount = 600; 
+    container.scrollBy({
+      left: direction === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth"
     });
   };
 
   const checkScrollPosition = () => {
     const container = categoryListRef.current;
     if (!container) return;
-    
     const { scrollLeft, scrollWidth, clientWidth } = container;
     setShowScrollButtons({
       left: scrollLeft > 0,
@@ -87,51 +85,62 @@ const Category = () => {
     }
   }, [categories]);
 
+  if (!authChecked) return null;
   if (!isLoggedIn) return null;
 
   return (
     <BackgroundLayout>
       {/* Category Navigation */}
-      <div className="fixed top-16 left-14 right-0 z-40 backdrop-blur-sm">
-        <div className="flex items-center h-16 gap-2 px-8">
-          {showScrollButtons.left && (
-            <button 
+      <div
+        className="fixed top-20 z-40 transition-all duration-300"
+        style={{ left: `${sidebarWidth}px`, width: `calc(100% - ${sidebarWidth}px)`, right: 'auto', background: 'none' }}
+      >
+        <div className="flex items-center h-16 gap-2 px-8 justify-center">
+          {categories.length > 4 && showScrollButtons.left && (
+            <button
               onClick={() => scrollCategoryList("left")}
               className="text-white hover:text-pink-400 transition-colors"
+              style={{ marginRight: 8 }}
             >
               <ChevronLeft size={28} />
             </button>
           )}
-          
-          <div className="flex-1 overflow-hidden">
-            <ul 
-              ref={categoryListRef} 
-              className="flex gap-2 overflow-x-auto scrollbar-hide"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-              onScroll={checkScrollPosition}
-            >
-              {categoriesLoading ? (
-                <CategoryListSkeleton items={5} />
-              ) : categories.length === 0 ? (
-                <p className="text-gray-300 text-center py-4">No categories found</p>
-              ) : (
-                categories.map((category) => (
-                  <CategoryItem 
-                    key={category._id} 
-                    category={category}
-                    isSelected={selectedCategory?._id === category._id}
-                    onClick={() => handleCategoryClick(category)}
-                    horizontal
-                  />
-                ))
-              )}
-            </ul>
+          <div
+            className="custom-scrollbar-hide"
+            style={{
+              width: 624, 
+              scrollSnapType: 'x mandatory',
+              display: 'grid',
+              gridAutoFlow: 'column',
+              gridTemplateColumns: `repeat(${categories.length}, 150px)`,
+              gap: '8px',
+              alignItems: 'center',
+              overflowX: 'auto',
+            }}
+            ref={categoryListRef}
+            onScroll={checkScrollPosition}
+          >
+            {categoriesLoading ? (
+              <CategoryListSkeleton items={4} />
+            ) : categories.length === 0 ? (
+              <p className="text-gray-300 text-center py-4">No categories found</p>
+            ) : (
+              categories.map((category) => (
+                <CategoryItem
+                  key={category._id}
+                  category={category}
+                  isSelected={selectedCategory?._id === category._id}
+                  onClick={() => handleCategoryClick(category)}
+                  horizontal
+                />
+              ))
+            )}
           </div>
-          
-          {showScrollButtons.right && (
-            <button 
+          {categories.length > 4 && showScrollButtons.right && (
+            <button
               onClick={() => scrollCategoryList("right")}
               className="text-white hover:text-pink-400 transition-colors"
+              style={{ marginLeft: 8 }}
             >
               <ChevronRight size={28} />
             </button>
@@ -140,7 +149,10 @@ const Category = () => {
       </div>
 
       {/* Main Content */}
-      <div className="pt-32 mb-8 max-w-7xl mx-auto p-4">
+      <div
+        className="pt-32 mb-8 max-w-7xl mx-auto p-4 transition-all duration-300"
+        style={{ marginLeft: sidebarWidth }}
+      >
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="lg:col-span-2">
             {selectedCategory && (

@@ -3,10 +3,11 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false); 
 
   const checkAuthStatus = useCallback(() => {
-    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+    const token = localStorage.getItem("token");
     if (!token) {
       setIsLoggedIn(false);
       return false;
@@ -17,6 +18,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     checkAuthStatus();
+    setAuthChecked(true); 
     const onStorage = () => checkAuthStatus();
     window.addEventListener("storage", onStorage);
     return () => window.removeEventListener("storage", onStorage);
@@ -28,12 +30,11 @@ export const AuthProvider = ({ children }) => {
 
   const logout = useCallback(() => {
     localStorage.removeItem("token");
-    sessionStorage.removeItem("token");
     setIsLoggedIn(false);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout, checkAuthStatus }}>
+    <AuthContext.Provider value={{ isLoggedIn, login, logout, checkAuthStatus, authChecked }}>
       {children}
     </AuthContext.Provider>
   );
