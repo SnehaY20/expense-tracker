@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../store/AuthStore";
 import { fetchExpenses, createExpense } from "../api/expense";
 import { fetchCategories } from "../api/category";
 import {
@@ -18,7 +20,20 @@ export const useOverviewData = () => {
   const [loading, setLoading] = useState(true);
   const [showQuickAdd, setShowQuickAdd] = useState(false);
 
+  const navigate = useNavigate();
+  const { logout, isLoggedIn } = useAuth();
+
+  useEffect(() => {
+    if (isLoggedIn === false) {
+      navigate("/login", { replace: true });
+    }
+  }, [isLoggedIn, navigate]);
+
   const fetchData = async () => {
+    if (!isLoggedIn || (!localStorage.getItem('token') && !sessionStorage.getItem('token'))) {
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       const [expensesData, categoriesData] = await Promise.all([
@@ -28,13 +43,26 @@ export const useOverviewData = () => {
       setExpenses(expensesData);
       setCategories(categoriesData);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      const isAuthError = error.status === 401 ||
+        error.message?.includes('401') ||
+        error.message?.includes('Token expired') ||
+        error.message?.includes('Unauthorized');
+      if (isAuthError) {
+        logout();
+        navigate("/login", { replace: true });
+        return;
+      }
     } finally {
       setLoading(false);
     }
   };
 
   const handleQuickAdd = async (formData) => {
+    if (!isLoggedIn || (!localStorage.getItem('token') && !sessionStorage.getItem('token'))) {
+      logout();
+      navigate("/login", { replace: true });
+      return;
+    }
     try {
       await createExpense({
         categoryId: formData.categoryId,
@@ -45,11 +73,19 @@ export const useOverviewData = () => {
       setShowQuickAdd(false);
       fetchData();
     } catch (error) {
-       showErrorToast("Failed to add expense");
+      const isAuthError = error.status === 401 ||
+        error.message?.includes('401') ||
+        error.message?.includes('Token expired') ||
+        error.message?.includes('Unauthorized');
+      if (isAuthError) {
+        logout();
+        navigate("/login", { replace: true });
+        return;
+      }
+      showErrorToast("Failed to add expense");
     }
   };
 
-  // Process data
   const currentMonthExpenses = getCurrentMonthExpenses(expenses);
   const categoryTotals = getCategoryTotals(currentMonthExpenses);
   const totalThisMonth = calculateTotalExpenses(currentMonthExpenses);

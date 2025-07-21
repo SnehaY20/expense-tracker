@@ -8,12 +8,20 @@ import { useNavigate } from "react-router-dom";
 
 export default function Home() {
   const [isVisible, setIsVisible] = useState(false);
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn, authChecked } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     setIsVisible(true);
-  }, []);
+    if (authChecked && isLoggedIn === false) {
+      navigate("/login", { replace: true });
+    }
+  }, [isLoggedIn, navigate, authChecked]);
+
+  if (!authChecked) return null;
+  if (isLoggedIn === false) {
+    return null;
+  }
 
   return (
     <BackgroundLayout>

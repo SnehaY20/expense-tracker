@@ -1,18 +1,17 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../store/AuthStore";
 
 const useAuthInterceptor = () => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const location = useLocation();
+  const { logout, isLoggedIn } = useAuth();
 
   useEffect(() => {
     const originalFetch = window.fetch;
 
     window.fetch = async (...args) => {
       const response = await originalFetch(...args);
-
-      // Don't redirect for password update endpoints (401 is expected for wrong current password)
       const url = args[0];
       const method = args[1]?.method || "GET";
       const isPasswordUpdate =
@@ -23,8 +22,14 @@ const useAuthInterceptor = () => {
         !url.includes("/register");
 
       if (response.status === 401 && !isPasswordUpdate) {
-        logout();
-        navigate("/login");
+        if (isLoggedIn) {
+          logout();
+          navigate("/login", { replace: true });
+        } 
+        else if (location.pathname === "/" && document.querySelector('[data-overview]')) {
+          logout();
+          navigate("/login", { replace: true });
+        }
       }
 
       return response;
@@ -33,7 +38,7 @@ const useAuthInterceptor = () => {
     return () => {
       window.fetch = originalFetch;
     };
-  }, [logout, navigate]);
+  }, [logout, navigate, isLoggedIn, location.pathname]);
 };
 
 export default useAuthInterceptor;
