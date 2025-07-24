@@ -13,15 +13,9 @@ export default function Home() {
 
   useEffect(() => {
     setIsVisible(true);
-    if (authChecked && isLoggedIn === false) {
-      navigate("/login", { replace: true });
-    }
-  }, [isLoggedIn, navigate, authChecked]);
+  }, []);
 
   if (!authChecked) return null;
-  if (isLoggedIn === false) {
-    return null;
-  }
 
   return (
     <BackgroundLayout>
