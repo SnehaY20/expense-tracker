@@ -123,7 +123,7 @@ const BudgetStatus = ({ spent = 0, limit = 0, loading = false, className = "" })
           ></div>
         </div>
       </div>
-      <div className="flex items-center justify-center mt-1">
+      <div className="flex items-center justify-center mt-2.5">
         {icon && React.isValidElement(icon)
           ? React.cloneElement(icon, {
               className: `${icon.props.className || ''} w-3 h-3 ${icon.props.className && icon.props.className.includes('animate-pulse') ? 'animate-pulse' : ''}`.trim(),

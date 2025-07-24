@@ -1,11 +1,9 @@
 import React from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../store/AuthStore";
-import { Home, ClipboardList, User, Settings, Power, Receipt } from "lucide-react";
+import { Home, Settings, Power, Receipt } from "lucide-react";
 
-// Icon components from lucide-react
 const HomeIcon = () => <Home size={20} />;
-const CategoryIcon = () => <ClipboardList size={20} />;
 const ExpenseIcon = () => <Receipt size={20} />;
 const SettingsIcon = () => <Settings size={20} />;
 const PowerIcon = () => <Power size={20} />;
@@ -23,7 +21,6 @@ const SidebarBody = ({ open }) => {
 
   const navLinks = [
     { label: "HOME", path: "/", icon: <HomeIcon /> },
-    { label: "CATEGORY", path: "/category", icon: <CategoryIcon /> },
     { label: "EXPENSE", path: "/expense", icon: <ExpenseIcon /> },
   ];
 
