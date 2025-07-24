@@ -7,6 +7,7 @@ import ExpenseDeleteModal from "./ExpenseDeleteModal";
 import ExpenseTableControls from "./ExpenseTableControls";
 import ExpenseEditModal from "./ExpenseEditModal";
 import { useQueryClient } from "@tanstack/react-query";
+import CategoryForm from "./CategoryForm";
 
 // Table components
 const Table = ({ children, className = "" }) => (
@@ -57,6 +58,7 @@ const ExpenseTable = ({
   const [deleting, setDeleting] = useState(false);
   const [editingExpense, setEditingExpense] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
   const queryClient = useQueryClient();
 
   const sortedExpenses = useMemo(() =>
@@ -99,6 +101,16 @@ const ExpenseTable = ({
     }));
   };
 
+  const handleAddCategory = () => {
+    setShowCategoryModal(true);
+  };
+
+  const handleCategoryModalClose = async () => {
+    setShowCategoryModal(false);
+    // Refresh categories after adding new one
+    await queryClient.invalidateQueries(['categories']);
+  };
+
   const rowHeight = 64;
   const headerHeight = 56;
   const maxHeight = maxVisibleRows ? `${headerHeight + maxVisibleRows * rowHeight + 12}px` : undefined;
@@ -128,7 +140,7 @@ const ExpenseTable = ({
         visibleColumns={visibleColumns}
         handleColumnToggle={handleColumnToggle}
         showAddCategoryButton={showAddCategoryButton}
-        onAddCategory={onAddCategory}
+        onAddCategory={handleAddCategory}
         showAddExpenseButton={showAddExpenseButton}
         onAddExpense={onAddExpense}
         showTotalBelow={showTotalBelow}
@@ -321,6 +333,18 @@ const ExpenseTable = ({
           setShowEditModal(false);
         }}
       />
+      {showCategoryModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white/10 border border-gray-400/30 rounded-2xl p-8 w-full max-w-xl mx-4 relative shadow-2xl">
+            <h2 className="text-xl font-semibold text-purple-300 mb-6 text-center">Add New Category</h2>
+            <CategoryForm
+              categories={categories}
+              onClose={handleCategoryModalClose}
+            />
+          </div>
+        </div>
+      )}
+
       {isColumnsDropdownOpen && (
         <div 
           className="fixed inset-0 z-5" 
