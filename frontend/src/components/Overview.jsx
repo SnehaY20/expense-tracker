@@ -92,45 +92,54 @@ const Overview = () => {
   }));
 
   return (
+    <div className="max-h-[calc(100vh-100px)] overflow-y-auto">
+      <div className="space-y-4 p-6">
 
-        <div className="space-y-3 p-6">
-      {/* Top Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-3">
-        <SummaryCard
-          title="Total Expenses (This Month)"
-          value={totalExpensesLoading ? <Spinner /> : `₹${totalExpenses.toLocaleString()}`}
-          icon={DollarSign}
-          iconColor="text-blue-400"
-          className="h-24"
-        />
-        <SummaryCard
-          title="Highest Spent Category"
-          value={loading ? <Spinner /> : highestCategory.name}
-          subtitle={loading ? "" : `₹${highestCategory.amount.toLocaleString()}`}
-          icon={TrendingUp}
-          iconColor="text-orange-400"
-          className="h-24"
-        />
-        <div className="col-span-1 sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2">
-          <BudgetStatus 
-            spent={totalExpenses} 
-            limit={budget?.amount || 0} 
-            loading={budgetLoading || totalExpensesLoading}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+          <SummaryCard
+            title={`Total Expenses (${new Date().toLocaleString('default', { month: 'long' })})`}
+            value={totalExpensesLoading ? <Spinner /> : `₹${totalExpenses.toLocaleString()}`}
+            icon={DollarSign}
+            iconColor="text-blue-400"
             className="h-24"
           />
-        </div>
-      </div>
-
-      {/* Charts and Categories Section */}
-      <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-4 xl:grid-cols-4 gap-3">
-        {/* Left Column - Pie Chart and Top Categories */}
-        <div className="col-span-1 md:col-span-1 lg:col-span-2 xl:col-span-2 space-y-6">
-          {/* Pie Chart */}
-          <div className="h-[200px]">
-            <ExpensePieChart data={loading ? [] : pieChartData} className="w-full h-full" />
+          <SummaryCard
+            title="Highest Spent Category"
+            value={loading ? <Spinner /> : highestCategory.name}
+            subtitle={loading ? "" : (
+              <span className="text-lg font-semibold">₹{highestCategory.amount.toLocaleString()}</span>
+            )}
+            icon={TrendingUp}
+            iconColor="text-orange-400"
+            className="h-24"
+          />
+          <div className="col-span-1 sm:col-span-2 md:col-span-2 lg:col-span-2 xl:col-span-2">
+            <BudgetStatus 
+              spent={totalExpenses} 
+              limit={budget?.amount || 0} 
+              loading={budgetLoading || totalExpensesLoading}
+              className="h-24"
+            />
           </div>
-          {/* Top Categories */}
-          <div className="h-[159px]">
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          <div className="lg:col-span-2">
+            <ExpensePieChart data={loading ? [] : pieChartData} className="w-full h-64" />
+          </div>
+          
+          <div className="lg:col-span-2 h-67">
+            <MonthlyTrendChart 
+              data={dailyExpenses} 
+              budget={budget?.amount || 0}
+              loading={dailyExpensesLoading}
+              className="w-full h-full"
+            />
+          </div>
+        </div>
+
+        <div className="mt-2">
+          <div className="h-64">
             <TopCategories
               categories={topCategories}
               currencySymbol="₹"
@@ -139,19 +148,8 @@ const Overview = () => {
             />
           </div>
         </div>
-        
-        {/* Right Column - Monthly Trend Chart */}
-        <div className="col-span-1 md:col-span-1 lg:col-span-2 xl:col-span-2 h-[370px]">
-          <MonthlyTrendChart 
-            data={dailyExpenses} 
-            budget={budget?.amount || 0}
-            loading={dailyExpensesLoading}
-            className="w-full h-full"
-          />
-          </div>
-        </div>       
-        </div>
-
+      </div>
+    </div>
   );
 };
 

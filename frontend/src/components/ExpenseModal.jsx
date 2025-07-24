@@ -73,6 +73,10 @@ const ExpenseModal = ({
 
   if (!isOpen) return null;
 
+  const maxVisibleItems = 3;
+  const itemHeight = 48; 
+  const maxDropdownHeight = maxVisibleItems * itemHeight;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
       <div className="bg-white/10 border border-gray-400/30 rounded-2xl p-8 w-full max-w-xl mx-4 relative shadow-2xl">
@@ -110,7 +114,12 @@ const ExpenseModal = ({
               </svg>
             </div>
             {isDropdownOpen && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800/95 border border-gray-400/30 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
+              <div 
+                className="absolute top-full left-0 right-0 mt-1 bg-gray-800/95 border border-gray-400/30 rounded-lg shadow-lg z-10 overflow-y-auto"
+                style={{ 
+                  maxHeight: categories.length > maxVisibleItems ? `${maxDropdownHeight}px` : 'auto' 
+                }}
+              >
                 {isCategoriesLoading ? (
                   <div className="px-4 py-3 flex justify-center">
                     <Spinner size="sm" />
@@ -204,7 +213,7 @@ const ExpenseModal = ({
             <div className="text-red-400 mb-2">
               Error: {categoriesError.message}
             </div>
-          )}
+            )}
           {createExpenseMutation.isError && (
             <div className="text-red-400 mb-2">
               Error: {createExpenseMutation.error.message}

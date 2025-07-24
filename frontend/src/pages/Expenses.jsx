@@ -72,6 +72,7 @@ const Expenses = () => {
                 showTotal={false}
                 showTotalBelow={true}
                 showAddExpenseButton={true}
+                showAddCategoryButton={true}  
                 onAddExpense={() => setShowModal(true)}
                 maxVisibleRows={5}
               />

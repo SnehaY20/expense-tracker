@@ -3,7 +3,6 @@ import { Routes, Route } from "react-router-dom";
 import useAuthInterceptor from "../hooks/useAuthInterceptor";
 
 import Home from "../pages/Home";
-import Category from "../pages/Category";
 import Expenses from "../pages/Expenses";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
@@ -22,14 +21,6 @@ const AppRoutes = () => {
     <AppLayout>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route
-          path="/category"
-          element={
-            <ProtectedRoute>
-              <Category />
-            </ProtectedRoute>
-          }
-        />
        
         <Route
           path="/expense"
