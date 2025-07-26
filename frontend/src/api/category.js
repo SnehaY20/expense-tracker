@@ -1,5 +1,5 @@
 import { getAuthHeaders } from "../utils/AuthHeaders";
-import { showSuccessToast } from "../utils/toast";
+// import { showSuccessToast } from "../utils/toast";
 
 // Get all categories
 export const fetchCategories = async () => {
@@ -75,7 +75,6 @@ export const updateCategory = async ({ id, name }) => {
     }
 
     const data = await response.json();
-    showSuccessToast("Category updated successfully!");
     return data;
   } catch (error) {
     throw error;
@@ -96,7 +95,6 @@ export const deleteCategory = async (id) => {
     }
 
     const data = await response.json();
-    showSuccessToast("Category deleted successfully!");
     return data;
   } catch (error) {
     throw error;
