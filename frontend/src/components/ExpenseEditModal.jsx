@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchCategories, updateCategory } from "../api/category";
+import { fetchCategories } from "../api/category";
 import { updateExpense } from "../api/expense";
 import Spinner from "./Spinner";
 import { showSuccessToast, showErrorToast } from "../utils/toast";
@@ -14,10 +14,9 @@ const ExpenseEditModal = ({ show, onClose, expense, onUpdate }) => {
     note: ""
   });
   const [updating, setUpdating] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [original, setOriginal] = useState({ category: '', title: '', amount: '', note: '' });
-  const [isEditingCategory, setIsEditingCategory] = useState(false);
-  const [editingCategoryName, setEditingCategoryName] = useState("");
 
   useEffect(() => {
     if (show) {
@@ -47,9 +46,6 @@ const ExpenseEditModal = ({ show, onClose, expense, onUpdate }) => {
     if (expense && categories.length > 0) {
       const cat = categories.find(c => c._id === expense.category);
       setSelectedCategory(cat || null);
-      if (cat) {
-        setEditingCategoryName(cat.name);
-      }
     }
   }, [expense, categories]);
 
@@ -58,46 +54,10 @@ const ExpenseEditModal = ({ show, onClose, expense, onUpdate }) => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleCategoryEdit = () => {
-    setIsEditingCategory(true);
-  };
-
-  const handleCategorySave = () => {
-    if (!editingCategoryName.trim()) return;
-    
-    setSelectedCategory(prev => ({ ...prev, name: editingCategoryName.trim() }));
-    setIsEditingCategory(false);
-  };
-
-  const handleCategoryCancel = () => {
-    setIsEditingCategory(false);
-    setEditingCategoryName(selectedCategory?.name || "");
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setUpdating(true);
     try {
-      if (selectedCategory && editingCategoryName !== categories.find(c => c._id === selectedCategory._id)?.name) {
-        try {
-          await updateCategory({
-            id: selectedCategory._id,
-            name: editingCategoryName.trim()
-          });
-          
-          setCategories(prev => 
-            prev.map(cat => 
-              cat._id === selectedCategory._id 
-                ? { ...cat, name: editingCategoryName.trim() }
-                : cat
-            )
-          );
-        } catch (categoryError) {
-          showErrorToast(categoryError.message || "Failed to update category");
-          return;
-        }
-      }
-
       await updateExpense({
         id: expense._id,
         title: form.title,
@@ -105,8 +65,7 @@ const ExpenseEditModal = ({ show, onClose, expense, onUpdate }) => {
         note: form.note,
         category: form.category
       });
-      
-      showSuccessToast("Updated successfully!");
+      showSuccessToast("Expense updated successfully!");
       onUpdate && onUpdate();
       onClose();
     } catch (err) {
@@ -122,71 +81,65 @@ const ExpenseEditModal = ({ show, onClose, expense, onUpdate }) => {
     String(form.amount) === String(original.amount) &&
     form.note === original.note;
 
-  const isCategoryChanged = selectedCategory && 
-    editingCategoryName !== categories.find(c => c._id === selectedCategory._id)?.name;
-
-  const hasChanges = !isUnchanged || isCategoryChanged;
-
   if (!show || !expense) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-gray-900/90 p-8 rounded-2xl shadow-2xl border border-gray-700 max-w-md w-full mx-4">
-        <h2 className="text-xl font-bold text-purple-200 mb-6 text-center">Edit</h2>
+        <h2 className="text-xl font-bold text-purple-200 mb-6 text-center">Edit Expense</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Category</label>
-            {loadingCategories ? (
-              <div className="flex items-center justify-center py-3">
-                <Spinner size="sm" />
-              </div>
-            ) : (
-              <div className="flex items-center gap-3">
-                {isEditingCategory ? (
-                  <div className="flex-1 flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={editingCategoryName}
-                      onChange={(e) => setEditingCategoryName(e.target.value)}
-                      className="flex-1 px-3 py-2 rounded-lg bg-white/10 text-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-purple-400"
-                      placeholder="Category name"
-                      autoFocus
-                    />
-                    <button
-                      type="button"
-                      onClick={handleCategorySave}
-                      className="px-3 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm font-medium flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
-                      disabled={!editingCategoryName.trim() || editingCategoryName === selectedCategory?.name}
-                    >
-                      Save
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleCategoryCancel}
-                      className="px-3 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors text-sm font-medium"
-                    >
-                      Cancel
-                    </button>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="bg-white/20 border border-gray-400/30 outline-none rounded-lg px-3 py-3 pr-12 text-base text-gray-400 focus:ring-2 focus:ring-purple-400 transition w-full appearance-none text-left"
+            >
+              {selectedCategory ? (
+                <span className="text-white">{selectedCategory.name}</span>
+              ) : (
+                "Category"
+              )}
+            </button>
+            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <svg
+                className={`w-4 h-4 text-gray-400 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+            {isDropdownOpen && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-gray-800/95 border border-gray-400/30 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
+                {loadingCategories ? (
+                  <div className="px-4 py-3 flex justify-center">
+                    <Spinner size="sm" />
                   </div>
                 ) : (
-                  <div className="flex-1 flex items-center justify-between bg-white/10 border border-white/20 rounded-lg px-3 py-2">
-                    <span className="text-white font-medium">
-                      {selectedCategory ? selectedCategory.name : "No category"}
-                    </span>
+                  categories.map((cat) => (
                     <button
+                      key={cat._id}
                       type="button"
-                      onClick={handleCategoryEdit}
-                      className="ml-3 px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm font-medium transition-colors"
-                      disabled={!selectedCategory}
+                      onClick={() => {
+                        setForm((prev) => ({ ...prev, category: cat._id }));
+                        setSelectedCategory(cat);
+                        setIsDropdownOpen(false);
+                      }}
+                      className="w-full px-4 py-3 text-left text-white hover:bg-blue-600 transition-colors border-b border-gray-600/30 last:border-b-0"
                     >
-                      Edit
+                      {cat.name}
                     </button>
-                  </div>
+                  ))
                 )}
               </div>
             )}
           </div>
-
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Title</label>
             <input
@@ -228,10 +181,10 @@ const ExpenseEditModal = ({ show, onClose, expense, onUpdate }) => {
             <button
               type="submit"
               className="flex-1 py-2 px-4 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={updating || !form.title || !form.amount || !form.category || !hasChanges}
+              disabled={updating || !form.title || !form.amount || !form.category || isUnchanged}
             >
               {updating && <Spinner size="sm" className="mr-2" />}
-              {updating ? "Updating..." : "Update"}
+              {updating ? "Updating..." : "Update Expense"}
             </button>
             <button
               type="button"
@@ -248,4 +201,4 @@ const ExpenseEditModal = ({ show, onClose, expense, onUpdate }) => {
   );
 };
 
-export default ExpenseEditModal;
+export default ExpenseEditModal; 
