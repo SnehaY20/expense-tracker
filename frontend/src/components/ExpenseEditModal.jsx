@@ -8,7 +8,7 @@ const ExpenseEditModal = ({ show, onClose, expense, onUpdate }) => {
   const [categories, setCategories] = useState([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [form, setForm] = useState({
-    category: "",
+    categoryId: "",
     title: "",
     amount: "",
     note: ""
@@ -63,7 +63,7 @@ const ExpenseEditModal = ({ show, onClose, expense, onUpdate }) => {
         title: form.title,
         amount: Number(form.amount),
         note: form.note,
-        category: form.category
+        categoryId: form.category
       });
       showSuccessToast("Expense updated successfully!");
       onUpdate && onUpdate();

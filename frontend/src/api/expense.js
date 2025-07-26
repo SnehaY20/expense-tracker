@@ -60,18 +60,24 @@ export const createExpense = async ({ categoryId, title, amount, note }) => {
 };
 
 // Update expense by expenseId
-export const updateExpense = async ({ id, title, amount, note }) => {
+export const updateExpense = async ({ id, title, amount, note, categoryId }) => {
   try {
     const response = await fetch(`/api/v1/expenses/${id}`, {
       method: "PUT",
       headers: getAuthHeaders(),
-      body: JSON.stringify({ title, amount, note }),
+      body: JSON.stringify({ 
+        title, 
+        amount, 
+        note, 
+        categoryId 
+      }),
     });
 
     if (!response.ok) {
       const error = await response.json();
       throw new Error(error.message || "Failed to update expense");
     }
+    
     const data = await response.json();
     return data;
   } catch (error) {

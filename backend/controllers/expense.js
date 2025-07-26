@@ -97,11 +97,17 @@ exports.createExpense = async (req, res) => {
  * @route     PUT /api/v1/expenses/id
  * @access    Private
  */
+/**
+ * @desc      Update expense by id
+ * @route     PUT /api/v1/expenses/id
+ * @access    Private
+ */
 exports.updateExpense = async (req, res) => {
   const TAG = "[updateExpense]";
   try {
-    const { title, amount, note } = req.body;
+    const { title, amount, note, categoryId } = req.body;
     const expenseId = req.params.id;
+    
     let expense = await Expense.findById(expenseId);
     if (!expense) {
       logger.error(`${TAG} Expense doesn't exist: ${expenseId}`);
@@ -110,17 +116,29 @@ exports.updateExpense = async (req, res) => {
         .json({ success: false, error: ERROR.EXPENSE.NOT_FOUND });
     }
 
+    if (categoryId) {
+      const category = await Category.findById(categoryId);
+      if (!category) {
+        logger.error(`${TAG} Category doesn't exist: ${categoryId}`);
+        return res
+          .status(404)
+          .json({ success: false, error: ERROR.CATEGORY.NOT_FOUND });
+      }
+    }
+
     expense = await Expense.findByIdAndUpdate(
       expenseId,
       {
         title,
         amount,
         note,
+        category: categoryId 
       },
       {
         new: true,
       }
     );
+    
     res.status(200).json({
       success: true,
       message: ERROR.EXPENSE.UPDATED,
