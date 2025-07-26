@@ -71,7 +71,6 @@ export const updatePassword = async ({
 
   if (!response.ok) {
     const error = await response.json();
-    // Handle specific error for wrong current password
     if (response.status === 401) {
       throw new Error("Current password is incorrect");
     }
