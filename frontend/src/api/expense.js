@@ -1,12 +1,11 @@
-import { getAuthHeaders } from "../utils/AuthHeaders";
+import { apiCall } from "../utils/apiClient";
 import { showSuccessToast } from "../utils/toast";
 
 // Get all expenses
 export const fetchExpenses = async () => {
   try {
-    const response = await fetch("/api/v1/expenses", {
+    const response = await apiCall("/expenses", {
       method: "GET",
-      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
@@ -23,9 +22,8 @@ export const fetchExpenses = async () => {
 // Get expenses by category ID
 export const fetchExpensesByCategory = async (categoryId) => {
   try {
-    const response = await fetch(`/api/v1/expenses/category/${categoryId}`, {
+    const response = await apiCall(`/expenses/category/${categoryId}`, {
       method: "GET",
-      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
@@ -42,9 +40,8 @@ export const fetchExpensesByCategory = async (categoryId) => {
 // Create expense (requires categoryId)
 export const createExpense = async ({ categoryId, title, amount, note }) => {
   try {
-    const response = await fetch(`/api/v1/expenses/${categoryId}`, {
+    const response = await apiCall(`/expenses/${categoryId}`, {
       method: "POST",
-      headers: getAuthHeaders(),
       body: JSON.stringify({ title, amount, note }),
     });
 
@@ -62,9 +59,8 @@ export const createExpense = async ({ categoryId, title, amount, note }) => {
 // Update expense by expenseId
 export const updateExpense = async ({ id, title, amount, note, categoryId }) => {
   try {
-    const response = await fetch(`/api/v1/expenses/${id}`, {
+    const response = await apiCall(`/expenses/${id}`, {
       method: "PUT",
-      headers: getAuthHeaders(),
       body: JSON.stringify({ 
         title, 
         amount, 
@@ -88,9 +84,8 @@ export const updateExpense = async ({ id, title, amount, note, categoryId }) => 
 // Delete expense by expenseId
 export const deleteExpense = async (id) => {
   try {
-    const response = await fetch(`/api/v1/expenses/${id}`, {
+    const response = await apiCall(`/expenses/${id}`, {
       method: "DELETE",
-      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
@@ -107,9 +102,8 @@ export const deleteExpense = async (id) => {
 // Get total amount of all expenses
 export const fetchTotalExpenses = async () => {
   try {
-    const response = await fetch("/api/v1/expenses/total", {
+    const response = await apiCall("/expenses/total", {
       method: "GET",
-      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
@@ -126,9 +120,8 @@ export const fetchTotalExpenses = async () => {
 // Get recent expenses (limit to 5)
 export const fetchRecentExpenses = async (limit = 5) => {
   try {
-    const response = await fetch(`/api/v1/expenses?limit=${limit}`, {
+    const response = await apiCall(`/expenses?limit=${limit}`, {
       method: "GET",
-      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
@@ -145,9 +138,8 @@ export const fetchRecentExpenses = async (limit = 5) => {
 // Get daily expenses for current month
 export const fetchDailyExpenses = async () => {
   try {
-    const response = await fetch("/api/v1/expenses/daily", {
+    const response = await apiCall("/expenses/daily", {
       method: "GET",
-      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {

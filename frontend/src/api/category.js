@@ -1,12 +1,11 @@
-import { getAuthHeaders } from "../utils/AuthHeaders";
+import { apiCall } from "../utils/apiClient";
 import { showSuccessToast } from "../utils/toast";
 
 // Get all categories
 export const fetchCategories = async () => {
   try {
-    const response = await fetch("/api/v1/category", {
+    const response = await apiCall("/category", {
       method: "GET",
-      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
@@ -23,9 +22,8 @@ export const fetchCategories = async () => {
 // Get category by ID
 export const fetchCategoryById = async (id) => {
   try {
-    const response = await fetch(`/api/v1/category/${id}`, {
+    const response = await apiCall(`/category/${id}`, {
       method: "GET",
-      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
@@ -42,9 +40,8 @@ export const fetchCategoryById = async (id) => {
 // Create category
 export const createCategory = async ({ name }) => {
   try {
-    const response = await fetch("/api/v1/category", {
+    const response = await apiCall("/category", {
       method: "POST",
-      headers: getAuthHeaders(),
       body: JSON.stringify({ name }),
     });
 
@@ -63,9 +60,8 @@ export const createCategory = async ({ name }) => {
 // Update category
 export const updateCategory = async ({ id, name }) => {
   try {
-    const response = await fetch(`/api/v1/category/${id}`, {
+    const response = await apiCall(`/category/${id}`, {
       method: "PUT",
-      headers: getAuthHeaders(),
       body: JSON.stringify({ name }),
     });
 
@@ -85,9 +81,8 @@ export const updateCategory = async ({ id, name }) => {
 // Delete category
 export const deleteCategory = async (id) => {
   try {
-    const response = await fetch(`/api/v1/category/${id}`, {
+    const response = await apiCall(`/category/${id}`, {
       method: "DELETE",
-      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
@@ -106,9 +101,8 @@ export const deleteCategory = async (id) => {
 // Get top categories by expense amount
 export const fetchTopCategories = async () => {
   try {
-    const response = await fetch("/api/v1/category/top-five", {
+    const response = await apiCall("/category/top-five", {
       method: "GET",
-      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {
@@ -126,9 +120,8 @@ export const fetchTopCategories = async () => {
 // Get total expense amount for a specific category
 export const fetchTotalExpenseByCategory = async (categoryId) => {
   try {
-    const response = await fetch(`/api/v1/category/${categoryId}/total-expense`, {
+    const response = await apiCall(`/category/${categoryId}/total-expense`, {
       method: "GET",
-      headers: getAuthHeaders(),
     });
 
     if (!response.ok) {

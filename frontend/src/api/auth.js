@@ -1,8 +1,9 @@
-import { getAuthHeaders } from "../utils/AuthHeaders";
+import { apiCall } from "../utils/apiClient";
 
-// Login
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api/v1';
+
 export const loginUser = async ({ email, password }) => {
-  const response = await fetch("/api/v1/auth/login", {
+  const response = await fetch(`${API_BASE_URL}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
@@ -24,9 +25,8 @@ export const loginUser = async ({ email, password }) => {
   return data;
 };
 
-// Register
 export const registerUser = async ({ name, email, password }) => {
-  const response = await fetch("/api/v1/auth/register", {
+  const response = await fetch(`${API_BASE_URL}/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, email, password }),
@@ -43,11 +43,9 @@ export const registerUser = async ({ name, email, password }) => {
   return response.json();
 };
 
-// profile
 export const fetchProfile = async () => {
-  const response = await fetch("/api/v1/auth/profile", {
+  const response = await apiCall("/auth/profile", {
     method: "GET",
-    headers: getAuthHeaders(),
   });
 
   if (!response.ok) {
@@ -57,21 +55,18 @@ export const fetchProfile = async () => {
   return response.json();
 };
 
-// password
 export const updatePassword = async ({
   userId,
   currentPassword,
   newPassword,
 }) => {
-  const response = await fetch(`/api/v1/auth/${userId}`, {
+  const response = await apiCall(`/auth/${userId}`, {
     method: "PUT",
-    headers: getAuthHeaders(),
     body: JSON.stringify({ currentPassword, newPassword }),
   });
 
   if (!response.ok) {
     const error = await response.json();
-    // Handle specific error for wrong current password
     if (response.status === 401) {
       throw new Error("Current password is incorrect");
     }
@@ -80,11 +75,9 @@ export const updatePassword = async ({
   return response.json();
 };
 
-// Update name
 export const updateName = async (name) => {
-  const response = await fetch("/api/v1/auth/update-name", {
+  const response = await apiCall("/auth/update-name", {
     method: "PUT",
-    headers: getAuthHeaders(),
     body: JSON.stringify({ name }),
   });
   if (!response.ok) {

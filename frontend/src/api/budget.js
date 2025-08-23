@@ -1,11 +1,9 @@
-import { getAuthHeaders } from "../utils/AuthHeaders";
-import { showSuccessToast } from "../utils/toast";
+import { apiCall } from "../utils/apiClient";
 
 // Get budget
 export const fetchBudget = async () => {
-  const response = await fetch("/api/v1/budget", {
+  const response = await apiCall("/budget", {
     method: "GET",
-    headers: getAuthHeaders(),
   });
   if (!response.ok) {
     const error = await response.json();
@@ -15,11 +13,10 @@ export const fetchBudget = async () => {
   return result.data;
 };
 
-// Create  budget
+// Create budget
 export const createBudget = async ({ amount }) => {
-  const response = await fetch("/api/v1/budget", {
+  const response = await apiCall("/budget", {
     method: "POST",
-    headers: getAuthHeaders(),
     body: JSON.stringify({ amount }),
   });
   if (!response.ok) {
@@ -32,9 +29,8 @@ export const createBudget = async ({ amount }) => {
 
 // Update budget 
 export const updateBudget = async ({ id, amount }) => {
-  const response = await fetch(`/api/v1/budget/${id}`, {
+  const response = await apiCall(`/budget/${id}`, {
     method: "PUT",
-    headers: getAuthHeaders(),
     body: JSON.stringify({ amount }),
   });
   if (!response.ok) {
@@ -47,9 +43,8 @@ export const updateBudget = async ({ id, amount }) => {
 
 // Delete budget 
 export const deleteBudget = async (id) => {
-  const response = await fetch(`/api/v1/budget/${id}`, {
+  const response = await apiCall(`/budget/${id}`, {
     method: "DELETE",
-    headers: getAuthHeaders(),
   });
   if (!response.ok) {
     const error = await response.json();
