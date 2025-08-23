@@ -1,0 +1,26 @@
+{
+  "name": "expense-tracker",
+  "version": "1.0.0",
+  "description": "Full-stack expense tracker application",
+  "scripts": {
+    "docker:build": "docker-compose build",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:restart": "docker-compose restart",
+    "docker:logs": "docker-compose logs -f",
+    "docker:logs:backend": "docker-compose logs -f backend",
+    "docker:logs:frontend": "docker-compose logs -f frontend",
+    "docker:logs:mongodb": "docker-compose logs -f mongodb",
+    "docker:clean": "docker-compose down -v --remove-orphans",
+    "start": "docker-compose up -d",
+    "stop": "docker-compose down",
+    "dev": "docker-compose up",
+    "build": "docker-compose build",
+    "install:backend": "cd backend && npm install",
+    "install:frontend": "cd frontend && npm install",
+    "install:all": "npm run install:backend && npm run install:frontend"
+  },
+  "keywords": ["expense-tracker", "full-stack", "react", "nodejs", "mongodb"],
+  "author": "Sneha Yadav",
+  "license": "MIT"
+}
