@@ -24,38 +24,28 @@ export const apiCall = async (endpoint, options = {}) => {
     },
   };
 
-  try {
-    const response = await fetch(url, finalOptions);
-    
-    if (response.status === 401) {
-      const isPasswordUpdate = 
-        typeof endpoint === "string" &&
-        endpoint.includes("/auth/") &&
-        options.method === "PUT" &&
-        !endpoint.includes("/login") &&
-        !endpoint.includes("/register");
-      
-      if (!isPasswordUpdate) {
-        localStorage.removeItem('token');
-        
-        window.location.href = '/login';
-        return;
-      }
-    }
-    
-    if (response.status === 403) {
-      console.error('Access forbidden - insufficient permissions');
-    }
-    
-    if (response.status >= 500) {
-      console.error('Server error:', response.status, response.statusText);
-    }
-    
-    return response;
-  } catch (error) {
-    if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
-      console.error('Network error - check your connection or CORS configuration');
-    }
-    throw error;
+  const response = await fetch(url, finalOptions);
+  
+  if (response.status === 401) {
+    localStorage.removeItem('token');
+    throw new Error('Authentication required - please log in again');
   }
+  
+  if (response.status === 403) {
+    throw new Error('Access forbidden - insufficient permissions');
+  }
+  
+  return response;
+};
+
+export const fetchProfile = async () => {
+  const response = await apiCall("/auth/profile", {
+    method: "GET",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch profile");
+  }
+
+  return response.json();
 };

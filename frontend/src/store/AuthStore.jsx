@@ -6,12 +6,10 @@ export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [authChecked, setAuthChecked] = useState(false); 
 
-  // Check if token is expired
   const isTokenExpired = useCallback((token) => {
     if (!token) return true;
     
     try {
-      // Decode JWT token to check expiration
       const payload = JSON.parse(atob(token.split('.')[1]));
       const currentTime = Date.now() / 1000;
       
@@ -29,7 +27,6 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem("token");
     
     if (!token || isTokenExpired(token)) {
-      // Clear expired/invalid token
       if (token) {
         localStorage.removeItem("token");
       }
@@ -41,17 +38,18 @@ export const AuthProvider = ({ children }) => {
     return true;
   }, [isTokenExpired]);
 
-  const forceLogout = useCallback(() => {
+  const forceLogout = useCallback((navigate) => {
     localStorage.removeItem("token");
     setIsLoggedIn(false);
-    window.location.href = '/login';
+    if (navigate) {
+      navigate('/login', { replace: true });
+    }
   }, []);
 
   useEffect(() => {
     checkAuthStatus();
     setAuthChecked(true); 
     
-    // Check auth status every minute to catch expired tokens
     const interval = setInterval(checkAuthStatus, 60000);
     
     const onStorage = () => checkAuthStatus();
@@ -67,10 +65,12 @@ export const AuthProvider = ({ children }) => {
     setIsLoggedIn(true);
   }, []);
 
-  const logout = useCallback(() => {
+  const logout = useCallback((navigate) => {
     localStorage.removeItem("token");
     setIsLoggedIn(false);
-    window.location.href = '/login';
+    if (navigate) {
+      navigate('/login', { replace: true });
+    }
   }, []);
 
   return (

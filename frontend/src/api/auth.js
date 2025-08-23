@@ -1,7 +1,8 @@
-import { apiCall } from "../utils/apiClient";
+import { apiCall, fetchProfile } from "../utils/apiClient";
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api/v1';
 
+// Login - keep as fetch since no auth needed
 export const loginUser = async ({ email, password }) => {
   const response = await fetch(`${API_BASE_URL}/auth/login`, {
     method: "POST",
@@ -21,7 +22,6 @@ export const loginUser = async ({ email, password }) => {
   }
 
   const data = await response.json();
-  localStorage.setItem("token", data.token);
   return data;
 };
 
@@ -32,28 +32,22 @@ export const registerUser = async ({ name, email, password }) => {
     body: JSON.stringify({ name, email, password }),
   });
 
-  if (!response.ok) {
-    if (response.status === 400 && email) {
-      throw new Error("User already exists");
-    } else {
-      throw new Error("Registration failed");
-    }
+  const contentType = response.headers.get("content-type");
+  if (!contentType || !contentType.includes("application/json")) {
+    const text = await response.text();
+    throw new Error("Unexpected response: " + text.slice(0, 100));
   }
-
-  return response.json();
-};
-
-export const fetchProfile = async () => {
-  const response = await apiCall("/auth/profile", {
-    method: "GET",
-  });
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || "Failed to fetch profile");
+    throw new Error(error.message || "Registration failed");
   }
-  return response.json();
+
+  const data = await response.json();
+  return data;
 };
+
+export { fetchProfile };
 
 export const updatePassword = async ({
   userId,

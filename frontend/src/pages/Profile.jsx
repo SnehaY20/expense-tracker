@@ -1,51 +1,41 @@
-import React, { useState, useEffect } from "react";
-import { fetchProfile } from "../api/auth";
-import { fetchBudget } from "../api/budget";
+import React, { useState, useCallback } from "react";
 import Card from "../components/Card";
 import Spinner from "../components/Spinner";
 import { useAuth } from "../store/AuthStore";
 import Name from "../components/Name";
 import Password from "../components/Password";
 import Budget from "../components/Budget";
-import { useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { useProfile, useBudget } from "../hooks/useApi";
 
 const Profile = () => {
-  const [user, setUser] = useState(null);
-  const { data: budget } = useQuery({ queryKey: ['budget'], queryFn: fetchBudget });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const { isLoggedIn, logout, authChecked } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (authChecked && isLoggedIn) {
-      loadProfile();
-    }
-  }, [isLoggedIn, authChecked]);
+  const { data: profileData, isLoading: isProfileLoading } = useProfile();
+  const { data: budget, isLoading: isBudgetLoading } = useBudget();
 
-  const loadProfile = async () => {
+  const reloadProfile = useCallback(async () => {
     try {
       setLoading(true);
-      const [profileData, budgetData] = await Promise.all([
-        fetchProfile(),
-        fetchBudget().catch(() => null) 
-      ]);
-      setUser(profileData.data);
+      await queryClient.invalidateQueries(['profile']);
     } catch (error) {
       if (error.status === 401 || error.message?.includes('401') || error.message?.includes('Unauthorized')) {
-        logout();
-        navigate("/login", { replace: true });
+        logout(navigate);
         return;
       }
     } finally {
       setLoading(false);
     }
-  };
+  }, [queryClient, logout, navigate]);
 
   if (!authChecked) return null;
   if (!isLoggedIn) return null;
 
-  if (loading) {
+  if (isProfileLoading || isBudgetLoading || loading) {
     return (
       <div className="flex flex-col h-screen">
         <div className="text-center">
@@ -56,6 +46,8 @@ const Profile = () => {
       </div>
     );
   }
+
+  const user = profileData?.data;
 
   return (
     <div className="flex flex-col h-screen w-full px-2 sm:px-6">
@@ -77,7 +69,7 @@ const Profile = () => {
               </div>
             </div>
             <div className="flex-1 space-y-6">
-              <Name user={user} reloadProfile={loadProfile} />
+              <Name user={user} reloadProfile={reloadProfile} />
               <div>
                 <div className="text-sm text-gray-300 font-semibold mb-2">Email</div>
                 <div className="text-lg font-bold text-white">{user?.email || ""}</div>
