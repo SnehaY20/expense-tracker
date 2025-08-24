@@ -1,20 +1,10 @@
 import { apiCall, fetchProfile } from "../utils/apiClient";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api/v1';
-
-// Login - keep as fetch since no auth needed
 export const loginUser = async ({ email, password }) => {
-  const response = await fetch(`${API_BASE_URL}/auth/login`, {
+  const response = await apiCall("/auth/login", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
   });
-
-  const contentType = response.headers.get("content-type");
-  if (!contentType || !contentType.includes("application/json")) {
-    const text = await response.text();
-    throw new Error("Unexpected response: " + text.slice(0, 100));
-  }
 
   if (!response.ok) {
     const error = await response.json();
@@ -26,17 +16,10 @@ export const loginUser = async ({ email, password }) => {
 };
 
 export const registerUser = async ({ name, email, password }) => {
-  const response = await fetch(`${API_BASE_URL}/auth/register`, {
+  const response = await apiCall("/auth/register", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, email, password }),
   });
-
-  const contentType = response.headers.get("content-type");
-  if (!contentType || !contentType.includes("application/json")) {
-    const text = await response.text();
-    throw new Error("Unexpected response: " + text.slice(0, 100));
-  }
 
   if (!response.ok) {
     const error = await response.json();
