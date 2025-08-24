@@ -1,24 +1,26 @@
 import React, { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { createBudget } from "../api/budget";
+import { useUpdateBudget } from "../hooks/useApi";
 import Button from "./Button";
 import Spinner from "./Spinner";
 import { showSuccessToast, showErrorToast } from "../utils/toast";
-import { createBudget, updateBudget } from "../api/budget";
-import { useQueryClient } from "@tanstack/react-query";
 
 const Budget = ({ budget }) => {
   const [editingBudget, setEditingBudget] = useState(false);
-  const [budgetInput, setBudgetInput] = useState(budget?.amount || "");
+  const [budgetInput, setBudgetInput] = useState(budget?.amount?.toString() || "");
   const [budgetUpdating, setBudgetUpdating] = useState(false);
-  const queryClient = useQueryClient();
+  
+  const updateBudgetMutation = useUpdateBudget();
 
   const handleBudgetEdit = () => {
     setEditingBudget(true);
-    setBudgetInput(budget?.amount || "");
+    setBudgetInput(budget?.amount?.toString() || "");
   };
 
   const handleCancel = () => {
     setEditingBudget(false);
-    setBudgetInput(budget?.amount || "");
+    setBudgetInput(budget?.amount?.toString() || "");
   };
 
   const handleAddBudget = async () => {
@@ -27,7 +29,7 @@ const Budget = ({ budget }) => {
       await createBudget({ amount: Number(budgetInput) });
       showSuccessToast("Budget added successfully!");
       setEditingBudget(false);
-      await queryClient.invalidateQueries(['budget']);
+
     } catch (err) {
       showErrorToast(err.message || "Failed to add budget");
     } finally {
@@ -39,10 +41,10 @@ const Budget = ({ budget }) => {
     if (!budget) return;
     setBudgetUpdating(true);
     try {
-      await updateBudget({ id: budget._id, amount: Number(budgetInput) });
+      await updateBudgetMutation.mutateAsync({ id: budget._id, amount: Number(budgetInput) });
       showSuccessToast("Budget updated successfully!");
       setEditingBudget(false);
-      await queryClient.invalidateQueries(['budget']);
+
     } catch (err) {
       showErrorToast(err.message || "Failed to update budget");
     } finally {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { memo } from "react";
 import { DollarSign, TrendingUp } from "lucide-react";
 import SummaryCard from "./SummaryCard";
 import TopCategories from "./TopCategories";
@@ -6,90 +6,21 @@ import ExpensePieChart from "./ExpensePieChart";
 import MonthlyTrendChart from "./MonthlyTrendChart";
 import BudgetStatus from "./BudgetStatus";
 import Spinner from "./Spinner";
-import { fetchTopCategories } from "../api/category";
-import { fetchBudget } from "../api/budget";
-import { fetchTotalExpenses, fetchDailyExpenses } from "../api/expense";
+import { useOverviewData } from "../hooks/useOverviewData";
 
-const Overview = () => {
-  const [topCategories, setTopCategories] = useState([]);
-  const [budget, setBudget] = useState(null);
-  const [totalExpenses, setTotalExpenses] = useState(0);
-  const [highestCategory, setHighestCategory] = useState({ name: "None", amount: 0 });
-  const [dailyExpenses, setDailyExpenses] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [budgetLoading, setBudgetLoading] = useState(true);
-  const [totalExpensesLoading, setTotalExpensesLoading] = useState(true);
-  const [dailyExpensesLoading, setDailyExpensesLoading] = useState(true);
-
-  useEffect(() => {
-    const loadTopCategories = async () => {
-      try {
-        setLoading(true);
-        const data = await fetchTopCategories();
-        setTopCategories(data);
-        if (data && data.length > 0) {
-          setHighestCategory({
-            name: data[0].name,
-            amount: data[0].totalAmount || data[0].amount
-          });
-        }
-      } catch (error) {
-        console.error("Failed to load top categories:", error);
-        setTopCategories([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const loadBudget = async () => {
-      try {
-        setBudgetLoading(true);
-        const data = await fetchBudget();
-        setBudget(data);
-      } catch (error) {
-        console.error("Failed to load budget:", error);
-        setBudget(null);
-      } finally {
-        setBudgetLoading(false);
-      }
-    };
-
-    const loadTotalExpenses = async () => {
-      try {
-        setTotalExpensesLoading(true);
-        const data = await fetchTotalExpenses();
-        setTotalExpenses(data);
-      } catch (error) {
-        console.error("Failed to load total expenses:", error);
-        setTotalExpenses(0);
-      } finally {
-        setTotalExpensesLoading(false);
-      }
-    };
-
-    const loadDailyExpenses = async () => {
-      try {
-        setDailyExpensesLoading(true);
-        const data = await fetchDailyExpenses();
-        setDailyExpenses(data);
-      } catch (error) {
-        console.error("Failed to load daily expenses:", error);
-        setDailyExpenses([]);
-      } finally {
-        setDailyExpensesLoading(false);
-      }
-    };
-
-    loadTopCategories();
-    loadBudget();
-    loadTotalExpenses();
-    loadDailyExpenses();
-  }, []);
-
-  const pieChartData = topCategories.map(category => ({
-    name: category.name,
-    value: category.totalAmount || category.amount || 0
-  }));
+const Overview = memo(() => {
+  const {
+    topCategories,
+    budget,
+    totalExpenses,
+    dailyExpenses,
+    highestCategory,
+    pieChartData,
+    isTopCategoriesLoading,
+    isBudgetLoading,
+    isTotalExpensesLoading,
+    isDailyExpensesLoading,
+  } = useOverviewData();
 
   return (
     <div className="max-h-[calc(100vh-100px)] overflow-y-auto">
@@ -98,15 +29,15 @@ const Overview = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4">
           <SummaryCard
             title={`Total Expenses (${new Date().toLocaleString('default', { month: 'long' })})`}
-            value={totalExpensesLoading ? <Spinner /> : `₹${totalExpenses.toLocaleString()}`}
+            value={isTotalExpensesLoading ? <Spinner /> : `₹${totalExpenses.toLocaleString()}`}
             icon={DollarSign}
             iconColor="text-blue-400"
             className="h-24"
           />
           <SummaryCard
             title="Highest Spent Category"
-            value={loading ? <Spinner /> : highestCategory.name}
-            subtitle={loading ? "" : (
+            value={isTopCategoriesLoading ? <Spinner /> : highestCategory.name}
+            subtitle={isTopCategoriesLoading ? "" : (
               <span className="text-lg font-semibold">₹{highestCategory.amount.toLocaleString()}</span>
             )}
             icon={TrendingUp}
@@ -117,7 +48,7 @@ const Overview = () => {
             <BudgetStatus 
               spent={totalExpenses} 
               limit={budget?.amount || 0} 
-              loading={budgetLoading || totalExpensesLoading}
+              loading={isBudgetLoading || isTotalExpensesLoading}
               className="h-24"
             />
           </div>
@@ -125,14 +56,14 @@ const Overview = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           <div className="lg:col-span-2">
-            <ExpensePieChart data={loading ? [] : pieChartData} className="w-full h-64" />
+            <ExpensePieChart data={isTopCategoriesLoading ? [] : pieChartData} className="w-full h-64" />
           </div>
           
           <div className="lg:col-span-2 h-67">
             <MonthlyTrendChart 
               data={dailyExpenses} 
               budget={budget?.amount || 0}
-              loading={dailyExpensesLoading}
+              loading={isDailyExpensesLoading}
               className="w-full h-full"
             />
           </div>
@@ -143,7 +74,7 @@ const Overview = () => {
             <TopCategories
               categories={topCategories}
               currencySymbol="₹"
-              loading={loading}
+              loading={isTopCategoriesLoading}
               className="w-full h-full"
             />
           </div>
@@ -151,6 +82,8 @@ const Overview = () => {
       </div>
     </div>
   );
-};
+});
+
+Overview.displayName = 'Overview';
 
 export default Overview;
