@@ -1,10 +1,9 @@
 import { apiCall, fetchProfile } from "../utils/apiClient";
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api/v1';
+const API_BASE = '/api/v1';
 
-// Login - keep as fetch since no auth needed
 export const loginUser = async ({ email, password }) => {
-  const response = await fetch(`${API_BASE_URL}/auth/login`, {
+  const response = await fetch(`${API_BASE}/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
@@ -26,7 +25,7 @@ export const loginUser = async ({ email, password }) => {
 };
 
 export const registerUser = async ({ name, email, password }) => {
-  const response = await fetch(`${API_BASE_URL}/auth/register`, {
+  const response = await fetch(`${API_BASE}/auth/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ name, email, password }),

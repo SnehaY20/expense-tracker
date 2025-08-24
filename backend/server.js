@@ -1,6 +1,5 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const cors = require("cors");
 const connectDb = require("./config/db.js");
 const logger = require("./config/logger.js");
 const reqLogger = require("./middleware/reqLogger.js");
@@ -15,13 +14,6 @@ dotenv.config({ path: "./.env" });
 connectDb();
 
 const app = express();
-
-app.use(cors({
-  origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
 
 app.use(express.json());
 app.use(reqLogger);

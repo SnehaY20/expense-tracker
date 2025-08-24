@@ -1,7 +1,7 @@
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api/v1';
+const API_BASE = '/api/v1';
 
 export const apiCall = async (endpoint, options = {}) => {
-  const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
+  const url = endpoint.startsWith('http') ? endpoint : `${API_BASE}${endpoint}`;
   
   // Get auth token
   const token = localStorage.getItem('token');
